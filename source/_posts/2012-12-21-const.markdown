@@ -8,4 +8,4 @@ categories: Program
 
 这是对《C++编程思想》第八章常量的总结。
 
-![const](./images/const.png)
+{% img ./const.png const %}

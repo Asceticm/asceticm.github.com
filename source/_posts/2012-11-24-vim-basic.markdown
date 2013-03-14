@@ -14,6 +14,8 @@ categories: Program
 
 VIM有着非常陡峭的学习曲线，所以请各位学习VIM的同志们保持耐心。
 
+<!-- more -->
+
 ##  三种模式
 
 VIM中常用的模式有三种：普通模式(normal)、插入模式(insert)、可视模式(visual)。
