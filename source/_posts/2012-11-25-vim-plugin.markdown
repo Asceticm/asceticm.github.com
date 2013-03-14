@@ -26,18 +26,20 @@ VIM的使用因人而异，每个人有每个人的使用习惯，所以配置�
 
 此处参考VIMIM给出的解决方法：
 
-    set encoding=utf-8
-    if g:iswindows==1
-    set termencoding=GBK
-    else
-        set termencoding=utf-8
-        endif
-        set fileencoding=utf-8
-        set fileencodingileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-        set langmenu=zh_CN.utf-8
-        source $VIMRUNTIME/delmenu.vim
-        source $VIMRUNTIME/menu.vim
-        language messages zh_cn.utf-8
+{% codeblock lang:vim %}
+set encoding=utf-8
+if g:iswindows==1
+set termencoding=GBK
+else
+    set termencoding=utf-8
+    endif
+    set fileencoding=utf-8
+    set fileencodingileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+    set langmenu=zh_CN.utf-8
+    source $VIMRUNTIME/delmenu.vim
+    source $VIMRUNTIME/menu.vim
+    language messages zh_cn.utf-8
+{% endcodeblock %}
 
 ##  底部状态栏的修改
 

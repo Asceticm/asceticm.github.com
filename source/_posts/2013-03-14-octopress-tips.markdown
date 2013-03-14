@@ -44,6 +44,7 @@ categories: archive
 
 再将下面的代码插入`<head>`和`</head>`标签中间，文件路径是`/source/_include/custom/head.html`
 
+{% codeblock lang:js %}
     <!-- mathjax config similar to math.stackexchange -->
     
     <script type="text/x-mathjax-config">
@@ -75,5 +76,6 @@ categories: archive
     <script type="text/javascript"
     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
+{% endcodeblock%}
 
 就OK了。
