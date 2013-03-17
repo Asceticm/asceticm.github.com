@@ -42,7 +42,7 @@ categories: archive
 
     gem install kramdown
 
-再将下面的代码插入`<head>`和`</head>`标签中间，文件路径是`/source/_include/custom/head.html`
+再将下面的代码插入`<head>`和`</head>`标签中间，就OK了（文件路径是`/source/_include/custom/head.html`）。
 
 {% codeblock lang:js %}
     <!-- mathjax config similar to math.stackexchange -->
@@ -76,6 +76,8 @@ categories: archive
     <script type="text/javascript"
     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
-{% endcodeblock%}
+{% endcodeblock %}
 
-就OK了。
+##代码高亮
+
+高亮代码使用codeblock即可。

@@ -45,7 +45,9 @@ else
 
 上面的配置文件的状态栏只能显示所在行，我们可以添加上所在列。
 
+{% codeblock lang:vim %}
     set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ POS:\ %l,%v
+{% endcodeblock lang:vim %}
 
 ##  VIM插件</strong>
 
@@ -58,66 +60,74 @@ else
     
     在命令行下执行：
     
-        git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+{% codeblock lang:bash %}
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+{% endcodeblock %}
     
     然后按照说明在配置文件中写入下面部分(当然插件可以自己选了)：
     
-        set nocompatible               " be iMproved
-        filetype off                   " required!
-    
-        set rtp+=~/.vim/bundle/vundle/
-        call vundle#rc()
-    
-        " let Vundle manage Vundle
-        " required! 
-        Bundle 'gmarik/vundle'
-    
-        " My Bundles here:
-        "
-        " original repos on github
-        Bundle 'tpope/vim-fugitive'
-        Bundle 'Lokaltog/vim-easymotion'
-        Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-        Bundle 'tpope/vim-rails.git'
-        " vim-scripts repos
-        Bundle 'L9'
-        Bundle 'FuzzyFinder'
-        " non github repos
-        Bundle 'git://git.wincent.com/command-t.git'
-        " ...
-    
-        filetype plugin indent on     " required!
-    
+{% codeblock lang:vim %}
+set nocompatible               " be iMproved
+filetype off                   " required!
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" let Vundle manage Vundle
+" required! 
+Bundle 'gmarik/vundle'
+
+" My Bundles here:
+"
+" original repos on github
+Bundle 'tpope/vim-fugitive'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+Bundle 'tpope/vim-rails.git'
+" vim-scripts repos
+Bundle 'L9'
+Bundle 'FuzzyFinder'
+" non github repos
+Bundle 'git://git.wincent.com/command-t.git'
+" ...
+
+filetype plugin indent on     " required!
+{% endcodeblock %}
+
     然后在VIM中执行:BundleInstall，它就会自动帮你安装插件了。</li>
 
 *   NerDTree:
 
     虽然说VIM自带文件管理的功能，但是比起NerDTree还是不够方便。推荐的NerDTree配置如下，快捷键映射为F7：
 
-        let NERDTreeChDirMode=2
-        let NERDTreeWinSize=30
-        let NERDTreeWinPos = "right"
-        let NERDTreeIgnore=['\.vim$', '\~$', '\.pyc$', '\.swp$']
-        let NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$',  '\~$']
-        nmap <F7> :NERDTreeToggle<CR>
+{% codeblock lang:vim %}
+let NERDTreeChDirMode=2
+let NERDTreeWinSize=30
+let NERDTreeWinPos = "right"
+let NERDTreeIgnore=['\.vim$', '\~$', '\.pyc$', '\.swp$']
+let NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$',  '\~$']
+nmap <F7> :NERDTreeToggle<CR>
+{% endcodeblock %}
 
 ##  自动补全：
 
 想必使用VIM码代码的人最需要的功能就是这个了吧，我使用的是neocomplcache+snipmate+supertab，借鉴了上面提到的配置文件，配置如下：
 
-    " neocomplcache
+{% codeblock lang:vim %}
+" neocomplcache
 
-    " Use neocomplcache.
-    let g:neocomplcache_enable_at_startup = 1
-    " Use smartcase.
-    let g:neocomplcache_enable_smart_case = 1
-    " Use underbar completion.
-    let g:neocomplcache_enable_underbar_completion = 1
-    let g:neocomplcache_disable_auto_complete=1
-    let g:neocomplcache_min_syntax_length=3
-    set completeopt-=preview
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Use underbar completion.
+let g:neocomplcache_enable_underbar_completion = 1
+let g:neocomplcache_disable_auto_complete=1
+let g:neocomplcache_min_syntax_length=3
+set completeopt-=preview
 
-    " SuperTab
+" SuperTab
 
-    let g:SuperTabRetainCompletiontype = 2
-    let g:supertabdefaultcompletionType = "<C-X><C-U>"
+let g:SuperTabRetainCompletiontype = 2
+let g:supertabdefaultcompletionType = "<C-X><C-U>"
+{% endcodeblock %}
