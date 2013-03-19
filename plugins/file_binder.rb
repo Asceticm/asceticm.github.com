@@ -1,132 +1,712 @@
-# encoding: utf-8
+  
 
-# Title: File Binder for Octopress
-# Authors: Code Ass http://aycabta.github.com/
-# Description: Attach some images or other files to the entry
-#
-# Usege:
-# ------
-# If you wrote a entry in "source/_posts/YYYY-DD-MM-title-of-a-entiry.markdown",
-# you can attach the files that are given the name of
-# "source/_posts/YYYY-DD-MM-title-of-a-entiry_filename-of-image.png" for example.
-# The attached files puts out into the same directory of the entry by the name of "filename-of-image.png",
-# in this case it is "public/blog/YYYY/DD/MM/title-of-a-entry/filename-of-image.png".
-# You can refer the files from the entry by img or others tags.
-#
-# Replace "./" that is head of src in a img tag with config['url'] + "/blog/YYYY/DD/MM/title-of-a-entry/".
-# config['url'] is written in _config.yml with "url: ".
-# So src is published absolute path without problems
-# if you write {% img ./filename-of-image.png %}.
-#
-# Support customized permalink in _config.yml that is different from "/blog/:year/:month/:day/:title/".
-#
-# License:
-# --------
-# Distributed under the [MIT License][MIT].
-#
-# [MIT]: http://www.opensource.org/licenses/mit-license.php
-#
 
-require './plugins/post_filters.rb'
-require './plugins/image_tag.rb'
+<!DOCTYPE html>
+<html>
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# githubog: http://ogp.me/ns/fb/githubog#">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>octopress-file-binder/plugins/file_binder.rb at master · aycabta/octopress-file-binder</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png" />
+    <link rel="logo" type="image/svg" href="http://github-media-downloads.s3.amazonaws.com/github-logo.svg" />
+    <meta name="msapplication-TileImage" content="/windows-tile.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
 
-module Jekyll
-  BOUND_FILE_MATCHER = /^(.+\/)*(\d+-\d+-\d+)-(.*)_(.*)(\.[^.]+)$/
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-  class Post
-    attr_accessor :base
+    <meta content="authenticity_token" name="csrf-param" />
+<meta content="s6fiwfU3njrCA8r+pZv7/kXWPFoi9/MRb9d12QuBl38=" name="csrf-token" />
 
-    def self.valid?(name)
-      if name =~ MATCHER
-        result = true
-        if name =~ Jekyll::BOUND_FILE_MATCHER
-          result = false
-        end
-      else
-        result = false
-      end
-      result
-    end
+    <link href="https://a248.e.akamai.net/assets.github.com/assets/github-bced846093783dc329a6bb21c8031d870340444b.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="https://a248.e.akamai.net/assets.github.com/assets/github2-36182176b3cf8d21e8b8575917ced76dba218ae6.css" media="all" rel="stylesheet" type="text/css" />
+    
 
-    def cleanup_bound_files
-      m, cats, date, slug, ext = *name.match(Post::MATCHER)
-      find_filename = [cats, date, '-', slug, '_*'].join
-      Dir[File.join(site.source, '_posts', find_filename)].each do |f|
-        if f =~ Jekyll::BOUND_FILE_MATCHER
-          dest_dir = File.dirname(destination(site.dest))
-          dest_filename = $4 + $5
-          dest_path = File.join(dest_dir, dest_filename)
-          FileUtils.rm_f(dest_path)
-        end
-      end
-    end
-  end
 
-  class Site
-    attr_accessor :me
+      <script src="https://a248.e.akamai.net/assets.github.com/assets/frameworks-d76b58e749b52bc47a4c46620bf2c320fabe5248.js" type="text/javascript"></script>
+      <script src="https://a248.e.akamai.net/assets.github.com/assets/github-63b69d5f9490ae130788ccca71a2331694a1449e.js" type="text/javascript"></script>
+      
+      <meta http-equiv="x-pjax-version" content="fec41c1ca15c77d7116683e928dfb56f">
 
-    alias_method :old_filter_entries_for_file_binder, :filter_entries
-    def filter_entries(entries)
-      entries = old_filter_entries_for_file_binder(entries).reject do |e|
-        result = false
-        if e =~ Jekyll::BOUND_FILE_MATCHER
-          result = true
-        end
-        result
-      end
-    end
+        <link data-pjax-transient rel='permalink' href='/aycabta/octopress-file-binder/blob/f1c36c22deb42f577116ccec05f33939dce4124c/plugins/file_binder.rb'>
+    <meta property="og:title" content="octopress-file-binder"/>
+    <meta property="og:type" content="githubog:gitrepository"/>
+    <meta property="og:url" content="https://github.com/aycabta/octopress-file-binder"/>
+    <meta property="og:image" content="https://secure.gravatar.com/avatar/50b88304c48eca63066a20d1c7c98954?s=420&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <meta property="og:site_name" content="GitHub"/>
+    <meta property="og:description" content="File Binder for Octopress. Contribute to octopress-file-binder development by creating an account on GitHub."/>
+    <meta property="twitter:card" content="summary"/>
+    <meta property="twitter:site" content="@GitHub">
+    <meta property="twitter:title" content="aycabta/octopress-file-binder"/>
 
-    alias_method :old_cleanup_for_file_binder, :cleanup
-    def cleanup
-      self.posts.each do |post|
-        post.cleanup_bound_files
-      end
-      old_cleanup_for_file_binder
-    end
-  end
+    <meta name="description" content="File Binder for Octopress. Contribute to octopress-file-binder development by creating an account on GitHub." />
 
-  module Convertible
-    alias_method :old_do_layout_for_file_binder, :do_layout
-    def do_layout(payload, layouts)
-      self.site.me = self
-      old_do_layout_for_file_binder(payload, layouts)
-    end
-  end
+  <link href="https://github.com/aycabta/octopress-file-binder/commits/master.atom" rel="alternate" title="Recent Commits to octopress-file-binder:master" type="application/atom+xml" />
 
-  class FileBinder < PostFilter
-    def post_write(post)
-      m, cats, date, slug, ext = *post.name.match(Post::MATCHER)
-      find_filename = [cats, date, '-', slug, '_*'].join
-      Dir[File.join(post.site.source, '_posts', find_filename)].each do |f|
-        if f =~ Jekyll::BOUND_FILE_MATCHER
-          src_path = f
-          dest_dir = File.dirname(post.destination(post.site.dest))
-          dest_filename = $4 + $5
-          dest_path = File.join(dest_dir, dest_filename)
-          FileUtils.cp(src_path, dest_path)
-        end
-      end
-    end
-  end
+  </head>
 
-  class ImageTag
-    alias_method :old_render_for_file_binder, :render
-    def render(context)
-      if @img['src'] =~ /^\.\/(.*)$/
-        me = context.registers[:site].me
-        if me.class == Jekyll::Post
-          if ENV.has_key?('OCTOPRESS_ENV') && ENV['OCTOPRESS_ENV'] == 'preview'
-            url = 'http://localhost:4000/'
-          else
-            url = context.registers[:site].config['url']
-          end
-          url = url[-1] == '/' ? url[0..-2] : url
-          @img['src'] = url + me.url + $1
-        end
-      end
-      old_render_for_file_binder(context)
-    end
-  end
 
-end
+  <body class="logged_in page-blob linux vis-public env-production  ">
+    <div id="wrapper">
+
+      
+
+      
+
+      
+
+      
+
+
+        <div class="header header-logged-in true">
+          <div class="container clearfix">
+
+            <a class="header-logo-blacktocat" href="https://github.com/">
+  <span class="mega-icon mega-icon-blacktocat"></span>
+</a>
+
+            <div class="divider-vertical"></div>
+
+              <a href="/notifications" class="notification-indicator tooltipped downwards" title="You have no unread notifications">
+    <span class="mail-status all-read"></span>
+  </a>
+  <div class="divider-vertical"></div>
+
+
+              <div class="command-bar js-command-bar  ">
+      <form accept-charset="UTF-8" action="/search" class="command-bar-form" id="top_search_form" method="get">
+  <a href="/search/advanced" class="advanced-search-icon tooltipped downwards command-bar-search" id="advanced_search" title="Advanced search"><span class="mini-icon mini-icon-advanced-search "></span></a>
+
+  <input type="text" name="q" id="js-command-bar-field" placeholder="Search or type a command" tabindex="1" data-username="Asceticm" autocapitalize="off">
+
+  <span class="mini-icon help tooltipped downwards" title="Show command bar help">
+    <span class="mini-icon mini-icon-help"></span>
+  </span>
+
+  <input type="hidden" name="ref" value="commandbar">
+
+  <div class="divider-vertical"></div>
+</form>
+  <ul class="top-nav">
+      <li class="explore"><a href="https://github.com/explore">Explore</a></li>
+      <li><a href="https://gist.github.com">Gist</a></li>
+      <li><a href="/blog">Blog</a></li>
+    <li><a href="http://help.github.com">Help</a></li>
+  </ul>
+</div>
+
+
+            
+
+  
+    <ul id="user-links">
+      <li>
+        <a href="https://github.com/Asceticm" class="name">
+          <img height="20" src="https://secure.gravatar.com/avatar/bea44b645ad7205d4634fa5fd69b7a50?s=140&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="20" /> Asceticm
+        </a>
+      </li>
+      <li>
+        <a href="/new" id="new_repo" class="tooltipped downwards" title="Create a new repo">
+          <span class="mini-icon mini-icon-create"></span>
+        </a>
+      </li>
+      <li>
+        <a href="/settings/profile" id="account_settings"
+          class="tooltipped downwards"
+          title="Account settings ">
+          <span class="mini-icon mini-icon-account-settings"></span>
+        </a>
+      </li>
+      <li>
+        <a href="/logout" data-method="post" id="logout" class="tooltipped downwards" title="Sign out">
+          <span class="mini-icon mini-icon-logout"></span>
+        </a>
+      </li>
+    </ul>
+
+
+
+            
+          </div>
+        </div>
+
+
+      
+
+      
+
+
+            <div class="site hfeed" itemscope itemtype="http://schema.org/WebPage">
+      <div class="hentry">
+        
+        <div class="pagehead repohead instapaper_ignore readability-menu ">
+          <div class="container">
+            <div class="title-actions-bar">
+              
+
+
+<ul class="pagehead-actions">
+
+
+    <li class="subscription">
+      <form accept-charset="UTF-8" action="/notifications/subscribe" data-autosubmit="true" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="authenticity_token" type="hidden" value="s6fiwfU3njrCA8r+pZv7/kXWPFoi9/MRb9d12QuBl38=" /></div>  <input id="repository_id" name="repository_id" type="hidden" value="5698404" />
+
+    <div class="select-menu js-menu-container js-select-menu">
+      <span class="minibutton select-menu-button js-menu-target">
+        <span class="js-select-button">
+          <span class="mini-icon mini-icon-watching"></span>
+          Watch
+        </span>
+      </span>
+
+      <div class="select-menu-modal-holder js-menu-content">
+        <div class="select-menu-modal">
+          <div class="select-menu-header">
+            <span class="select-menu-title">Notification status</span>
+            <span class="mini-icon mini-icon-remove-close js-menu-close"></span>
+          </div> <!-- /.select-menu-header -->
+
+          <div class="select-menu-list js-navigation-container">
+
+            <div class="select-menu-item js-navigation-item js-navigation-target selected">
+              <span class="select-menu-item-icon mini-icon mini-icon-confirm"></span>
+              <div class="select-menu-item-text">
+                <input checked="checked" id="do_included" name="do" type="radio" value="included" />
+                <h4>Not watching</h4>
+                <span class="description">You only receive notifications for discussions in which you participate or are @mentioned.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="mini-icon mini-icon-watching"></span>
+                  Watch
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+            <div class="select-menu-item js-navigation-item js-navigation-target ">
+              <span class="select-menu-item-icon mini-icon mini-icon-confirm"></span>
+              <div class="select-menu-item-text">
+                <input id="do_subscribed" name="do" type="radio" value="subscribed" />
+                <h4>Watching</h4>
+                <span class="description">You receive notifications for all discussions in this repository.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="mini-icon mini-icon-unwatch"></span>
+                  Unwatch
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+            <div class="select-menu-item js-navigation-item js-navigation-target ">
+              <span class="select-menu-item-icon mini-icon mini-icon-confirm"></span>
+              <div class="select-menu-item-text">
+                <input id="do_ignore" name="do" type="radio" value="ignore" />
+                <h4>Ignoring</h4>
+                <span class="description">You do not receive any notifications for discussions in this repository.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="mini-icon mini-icon-mute"></span>
+                  Stop ignoring
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+          </div> <!-- /.select-menu-list -->
+
+        </div> <!-- /.select-menu-modal -->
+      </div> <!-- /.select-menu-modal-holder -->
+    </div> <!-- /.select-menu -->
+
+</form>
+    </li>
+
+    <li class="js-toggler-container js-social-container starring-container ">
+      <a href="/aycabta/octopress-file-binder/unstar" class="minibutton js-toggler-target star-button starred upwards" title="Unstar this repo" data-remote="true" data-method="post" rel="nofollow">
+        <span class="mini-icon mini-icon-remove-star"></span>
+        <span class="text">Unstar</span>
+      </a>
+      <a href="/aycabta/octopress-file-binder/star" class="minibutton js-toggler-target star-button unstarred upwards" title="Star this repo" data-remote="true" data-method="post" rel="nofollow">
+        <span class="mini-icon mini-icon-star"></span>
+        <span class="text">Star</span>
+      </a>
+      <a class="social-count js-social-count" href="/aycabta/octopress-file-binder/stargazers">3</a>
+    </li>
+
+        <li>
+          <a href="/aycabta/octopress-file-binder/fork" class="minibutton js-toggler-target fork-button lighter upwards" title="Fork this repo" rel="nofollow" data-method="post">
+            <span class="mini-icon mini-icon-branch-create"></span>
+            <span class="text">Fork</span>
+          </a>
+          <a href="/aycabta/octopress-file-binder/network" class="social-count">0</a>
+        </li>
+
+
+</ul>
+
+              <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public">
+                <span class="repo-label"><span>public</span></span>
+                <span class="mega-icon mega-icon-public-repo"></span>
+                <span class="author vcard">
+                  <a href="/aycabta" class="url fn" itemprop="url" rel="author">
+                  <span itemprop="title">aycabta</span>
+                  </a></span> /
+                <strong><a href="/aycabta/octopress-file-binder" class="js-current-repository">octopress-file-binder</a></strong>
+              </h1>
+            </div>
+
+            
+  <ul class="tabs">
+    <li><a href="/aycabta/octopress-file-binder" class="selected" highlight="repo_source repo_downloads repo_commits repo_tags repo_branches">Code</a></li>
+    <li><a href="/aycabta/octopress-file-binder/network" highlight="repo_network">Network</a></li>
+    <li><a href="/aycabta/octopress-file-binder/pulls" highlight="repo_pulls">Pull Requests <span class='counter'>0</span></a></li>
+
+      <li><a href="/aycabta/octopress-file-binder/issues" highlight="repo_issues">Issues <span class='counter'>0</span></a></li>
+
+      <li><a href="/aycabta/octopress-file-binder/wiki" highlight="repo_wiki">Wiki</a></li>
+
+
+    <li><a href="/aycabta/octopress-file-binder/graphs" highlight="repo_graphs repo_contributors">Graphs</a></li>
+
+
+  </ul>
+  
+<div class="tabnav">
+
+  <span class="tabnav-right">
+    <ul class="tabnav-tabs">
+          <li><a href="/aycabta/octopress-file-binder/tags" class="tabnav-tab" highlight="repo_tags">Tags <span class="counter blank">0</span></a></li>
+    </ul>
+    
+  </span>
+
+  <div class="tabnav-widget scope">
+
+
+    <div class="select-menu js-menu-container js-select-menu js-branch-menu">
+      <a class="minibutton select-menu-button js-menu-target" data-hotkey="w" data-ref="master">
+        <span class="mini-icon mini-icon-branch"></span>
+        <i>branch:</i>
+        <span class="js-select-button">master</span>
+      </a>
+
+      <div class="select-menu-modal-holder js-menu-content js-navigation-container">
+
+        <div class="select-menu-modal">
+          <div class="select-menu-header">
+            <span class="select-menu-title">Switch branches/tags</span>
+            <span class="mini-icon mini-icon-remove-close js-menu-close"></span>
+          </div> <!-- /.select-menu-header -->
+
+          <div class="select-menu-filters">
+            <div class="select-menu-text-filter">
+              <input type="text" id="commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
+            </div>
+            <div class="select-menu-tabs">
+              <ul>
+                <li class="select-menu-tab">
+                  <a href="#" data-tab-filter="branches" class="js-select-menu-tab">Branches</a>
+                </li>
+                <li class="select-menu-tab">
+                  <a href="#" data-tab-filter="tags" class="js-select-menu-tab">Tags</a>
+                </li>
+              </ul>
+            </div><!-- /.select-menu-tabs -->
+          </div><!-- /.select-menu-filters -->
+
+          <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket css-truncate" data-tab-filter="branches">
+
+            <div data-filterable-for="commitish-filter-field" data-filterable-type="substring">
+
+                <div class="select-menu-item js-navigation-item js-navigation-target selected">
+                  <span class="select-menu-item-icon mini-icon mini-icon-confirm"></span>
+                  <a href="/aycabta/octopress-file-binder/blob/master/plugins/file_binder.rb" class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target" data-name="master" rel="nofollow" title="master">master</a>
+                </div> <!-- /.select-menu-item -->
+            </div>
+
+              <div class="select-menu-no-results">Nothing to show</div>
+          </div> <!-- /.select-menu-list -->
+
+
+          <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket css-truncate" data-tab-filter="tags">
+            <div data-filterable-for="commitish-filter-field" data-filterable-type="substring">
+
+            </div>
+
+            <div class="select-menu-no-results">Nothing to show</div>
+
+          </div> <!-- /.select-menu-list -->
+
+        </div> <!-- /.select-menu-modal -->
+      </div> <!-- /.select-menu-modal-holder -->
+    </div> <!-- /.select-menu -->
+
+  </div> <!-- /.scope -->
+
+  <ul class="tabnav-tabs">
+    <li><a href="/aycabta/octopress-file-binder" class="selected tabnav-tab" highlight="repo_source">Files</a></li>
+    <li><a href="/aycabta/octopress-file-binder/commits/master" class="tabnav-tab" highlight="repo_commits">Commits</a></li>
+    <li><a href="/aycabta/octopress-file-binder/branches" class="tabnav-tab" highlight="repo_branches" rel="nofollow">Branches <span class="counter ">1</span></a></li>
+  </ul>
+
+</div>
+
+  
+  
+  
+
+
+            
+          </div>
+        </div><!-- /.repohead -->
+
+        <div id="js-repo-pjax-container" class="container context-loader-container" data-pjax-container>
+          
+
+
+<!-- blob contrib key: blob_contributors:v21:323fdd02499d81a4611a54ad8b77602d -->
+<!-- blob contrib frag key: views10/v8/blob_contributors:v21:323fdd02499d81a4611a54ad8b77602d -->
+
+
+<div id="slider">
+    <div class="frame-meta">
+
+      <p title="This is a placeholder element" class="js-history-link-replace hidden"></p>
+
+        <div class="breadcrumb">
+          <span class='bold'><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/aycabta/octopress-file-binder" class="js-slide-to" data-branch="master" data-direction="back" itemscope="url"><span itemprop="title">octopress-file-binder</span></a></span></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/aycabta/octopress-file-binder/tree/master/plugins" class="js-slide-to" data-branch="master" data-direction="back" itemscope="url"><span itemprop="title">plugins</span></a></span><span class="separator"> / </span><strong class="final-path">file_binder.rb</strong> <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="plugins/file_binder.rb" data-copied-hint="copied!" title="copy to clipboard"><span class="mini-icon mini-icon-clipboard"></span></span>
+        </div>
+
+      <a href="/aycabta/octopress-file-binder/find/master" class="js-slide-to" data-hotkey="t" style="display:none">Show File Finder</a>
+
+
+        
+  <div class="commit file-history-tease">
+    <img class="main-avatar" height="24" src="https://secure.gravatar.com/avatar/50b88304c48eca63066a20d1c7c98954?s=140&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="24" />
+    <span class="author"><a href="/aycabta" rel="author">aycabta</a></span>
+    <time class="js-relative-date" datetime="2012-09-06T05:22:33-07:00" title="2012-09-06 05:22:33">September 06, 2012</time>
+    <div class="commit-title">
+        <a href="/aycabta/octopress-file-binder/commit/f1c36c22deb42f577116ccec05f33939dce4124c" class="message">removed debug code to fix syntax error</a>
+    </div>
+
+    <div class="participation">
+      <p class="quickstat"><a href="#blob_contributors_box" rel="facebox"><strong>1</strong> contributor</a></p>
+      
+    </div>
+    <div id="blob_contributors_box" style="display:none">
+      <h2>Users on GitHub who have contributed to this file</h2>
+      <ul class="facebox-user-list">
+        <li>
+          <img height="24" src="https://secure.gravatar.com/avatar/50b88304c48eca63066a20d1c7c98954?s=140&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="24" />
+          <a href="/aycabta">aycabta</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+    </div><!-- ./.frame-meta -->
+
+    <div class="frames">
+      <div class="frame" data-permalink-url="/aycabta/octopress-file-binder/blob/f1c36c22deb42f577116ccec05f33939dce4124c/plugins/file_binder.rb" data-title="octopress-file-binder/plugins/file_binder.rb at master · aycabta/octopress-file-binder · GitHub" data-type="blob">
+
+        <div id="files" class="bubble">
+          <div class="file">
+            <div class="meta">
+              <div class="info">
+                <span class="icon"><b class="mini-icon mini-icon-text-file"></b></span>
+                <span class="mode" title="File Mode">file</span>
+                  <span>133 lines (118 sloc)</span>
+                <span>3.968 kb</span>
+              </div>
+              <div class="actions">
+                <div class="button-group">
+                        <a class="minibutton tooltipped leftwards"
+                           title="Clicking this button will automatically fork this project so you can edit the file"
+                           href="/aycabta/octopress-file-binder/edit/master/plugins/file_binder.rb"
+                           data-method="post" rel="nofollow">Edit</a>
+                  <a href="/aycabta/octopress-file-binder/raw/master/plugins/file_binder.rb" class="button minibutton " id="raw-url">Raw</a>
+                    <a href="/aycabta/octopress-file-binder/blame/master/plugins/file_binder.rb" class="button minibutton ">Blame</a>
+                  <a href="/aycabta/octopress-file-binder/commits/master/plugins/file_binder.rb" class="button minibutton " rel="nofollow">History</a>
+                </div><!-- /.button-group -->
+              </div><!-- /.actions -->
+
+            </div>
+                <div class="data type-ruby js-blob-data">
+      <table cellpadding="0" cellspacing="0" class="lines">
+        <tr>
+          <td>
+            <pre class="line_numbers"><span id="L1" rel="#L1">1</span>
+<span id="L2" rel="#L2">2</span>
+<span id="L3" rel="#L3">3</span>
+<span id="L4" rel="#L4">4</span>
+<span id="L5" rel="#L5">5</span>
+<span id="L6" rel="#L6">6</span>
+<span id="L7" rel="#L7">7</span>
+<span id="L8" rel="#L8">8</span>
+<span id="L9" rel="#L9">9</span>
+<span id="L10" rel="#L10">10</span>
+<span id="L11" rel="#L11">11</span>
+<span id="L12" rel="#L12">12</span>
+<span id="L13" rel="#L13">13</span>
+<span id="L14" rel="#L14">14</span>
+<span id="L15" rel="#L15">15</span>
+<span id="L16" rel="#L16">16</span>
+<span id="L17" rel="#L17">17</span>
+<span id="L18" rel="#L18">18</span>
+<span id="L19" rel="#L19">19</span>
+<span id="L20" rel="#L20">20</span>
+<span id="L21" rel="#L21">21</span>
+<span id="L22" rel="#L22">22</span>
+<span id="L23" rel="#L23">23</span>
+<span id="L24" rel="#L24">24</span>
+<span id="L25" rel="#L25">25</span>
+<span id="L26" rel="#L26">26</span>
+<span id="L27" rel="#L27">27</span>
+<span id="L28" rel="#L28">28</span>
+<span id="L29" rel="#L29">29</span>
+<span id="L30" rel="#L30">30</span>
+<span id="L31" rel="#L31">31</span>
+<span id="L32" rel="#L32">32</span>
+<span id="L33" rel="#L33">33</span>
+<span id="L34" rel="#L34">34</span>
+<span id="L35" rel="#L35">35</span>
+<span id="L36" rel="#L36">36</span>
+<span id="L37" rel="#L37">37</span>
+<span id="L38" rel="#L38">38</span>
+<span id="L39" rel="#L39">39</span>
+<span id="L40" rel="#L40">40</span>
+<span id="L41" rel="#L41">41</span>
+<span id="L42" rel="#L42">42</span>
+<span id="L43" rel="#L43">43</span>
+<span id="L44" rel="#L44">44</span>
+<span id="L45" rel="#L45">45</span>
+<span id="L46" rel="#L46">46</span>
+<span id="L47" rel="#L47">47</span>
+<span id="L48" rel="#L48">48</span>
+<span id="L49" rel="#L49">49</span>
+<span id="L50" rel="#L50">50</span>
+<span id="L51" rel="#L51">51</span>
+<span id="L52" rel="#L52">52</span>
+<span id="L53" rel="#L53">53</span>
+<span id="L54" rel="#L54">54</span>
+<span id="L55" rel="#L55">55</span>
+<span id="L56" rel="#L56">56</span>
+<span id="L57" rel="#L57">57</span>
+<span id="L58" rel="#L58">58</span>
+<span id="L59" rel="#L59">59</span>
+<span id="L60" rel="#L60">60</span>
+<span id="L61" rel="#L61">61</span>
+<span id="L62" rel="#L62">62</span>
+<span id="L63" rel="#L63">63</span>
+<span id="L64" rel="#L64">64</span>
+<span id="L65" rel="#L65">65</span>
+<span id="L66" rel="#L66">66</span>
+<span id="L67" rel="#L67">67</span>
+<span id="L68" rel="#L68">68</span>
+<span id="L69" rel="#L69">69</span>
+<span id="L70" rel="#L70">70</span>
+<span id="L71" rel="#L71">71</span>
+<span id="L72" rel="#L72">72</span>
+<span id="L73" rel="#L73">73</span>
+<span id="L74" rel="#L74">74</span>
+<span id="L75" rel="#L75">75</span>
+<span id="L76" rel="#L76">76</span>
+<span id="L77" rel="#L77">77</span>
+<span id="L78" rel="#L78">78</span>
+<span id="L79" rel="#L79">79</span>
+<span id="L80" rel="#L80">80</span>
+<span id="L81" rel="#L81">81</span>
+<span id="L82" rel="#L82">82</span>
+<span id="L83" rel="#L83">83</span>
+<span id="L84" rel="#L84">84</span>
+<span id="L85" rel="#L85">85</span>
+<span id="L86" rel="#L86">86</span>
+<span id="L87" rel="#L87">87</span>
+<span id="L88" rel="#L88">88</span>
+<span id="L89" rel="#L89">89</span>
+<span id="L90" rel="#L90">90</span>
+<span id="L91" rel="#L91">91</span>
+<span id="L92" rel="#L92">92</span>
+<span id="L93" rel="#L93">93</span>
+<span id="L94" rel="#L94">94</span>
+<span id="L95" rel="#L95">95</span>
+<span id="L96" rel="#L96">96</span>
+<span id="L97" rel="#L97">97</span>
+<span id="L98" rel="#L98">98</span>
+<span id="L99" rel="#L99">99</span>
+<span id="L100" rel="#L100">100</span>
+<span id="L101" rel="#L101">101</span>
+<span id="L102" rel="#L102">102</span>
+<span id="L103" rel="#L103">103</span>
+<span id="L104" rel="#L104">104</span>
+<span id="L105" rel="#L105">105</span>
+<span id="L106" rel="#L106">106</span>
+<span id="L107" rel="#L107">107</span>
+<span id="L108" rel="#L108">108</span>
+<span id="L109" rel="#L109">109</span>
+<span id="L110" rel="#L110">110</span>
+<span id="L111" rel="#L111">111</span>
+<span id="L112" rel="#L112">112</span>
+<span id="L113" rel="#L113">113</span>
+<span id="L114" rel="#L114">114</span>
+<span id="L115" rel="#L115">115</span>
+<span id="L116" rel="#L116">116</span>
+<span id="L117" rel="#L117">117</span>
+<span id="L118" rel="#L118">118</span>
+<span id="L119" rel="#L119">119</span>
+<span id="L120" rel="#L120">120</span>
+<span id="L121" rel="#L121">121</span>
+<span id="L122" rel="#L122">122</span>
+<span id="L123" rel="#L123">123</span>
+<span id="L124" rel="#L124">124</span>
+<span id="L125" rel="#L125">125</span>
+<span id="L126" rel="#L126">126</span>
+<span id="L127" rel="#L127">127</span>
+<span id="L128" rel="#L128">128</span>
+<span id="L129" rel="#L129">129</span>
+<span id="L130" rel="#L130">130</span>
+<span id="L131" rel="#L131">131</span>
+<span id="L132" rel="#L132">132</span>
+</pre>
+          </td>
+          <td width="100%">
+                  <div class="highlight"><pre><div class='line' id='LC1'><span class="c1"># encoding: utf-8</span></div><div class='line' id='LC2'><br/></div><div class='line' id='LC3'><span class="c1"># Title: File Binder for Octopress</span></div><div class='line' id='LC4'><span class="c1"># Authors: Code Ass http://aycabta.github.com/</span></div><div class='line' id='LC5'><span class="c1"># Description: Attach some images or other files to the entry</span></div><div class='line' id='LC6'><span class="c1">#</span></div><div class='line' id='LC7'><span class="c1"># Usege:</span></div><div class='line' id='LC8'><span class="c1"># ------</span></div><div class='line' id='LC9'><span class="c1"># If you wrote a entry in &quot;source/_posts/YYYY-DD-MM-title-of-a-entiry.markdown&quot;,</span></div><div class='line' id='LC10'><span class="c1"># you can attach the files that are given the name of</span></div><div class='line' id='LC11'><span class="c1"># &quot;source/_posts/YYYY-DD-MM-title-of-a-entiry_filename-of-image.png&quot; for example.</span></div><div class='line' id='LC12'><span class="c1"># The attached files puts out into the same directory of the entry by the name of &quot;filename-of-image.png&quot;,</span></div><div class='line' id='LC13'><span class="c1"># in this case it is &quot;public/blog/YYYY/DD/MM/title-of-a-entry/filename-of-image.png&quot;.</span></div><div class='line' id='LC14'><span class="c1"># You can refer the files from the entry by img or others tags.</span></div><div class='line' id='LC15'><span class="c1">#</span></div><div class='line' id='LC16'><span class="c1"># Replace &quot;./&quot; that is head of src in a img tag with config[&#39;url&#39;] + &quot;/blog/YYYY/DD/MM/title-of-a-entry/&quot;.</span></div><div class='line' id='LC17'><span class="c1"># config[&#39;url&#39;] is written in _config.yml with &quot;url: &quot;.</span></div><div class='line' id='LC18'><span class="c1"># So src is published absolute path without problems</span></div><div class='line' id='LC19'><span class="c1"># if you write {% img ./filename-of-image.png %}.</span></div><div class='line' id='LC20'><span class="c1">#</span></div><div class='line' id='LC21'><span class="c1"># Support customized permalink in _config.yml that is different from &quot;/blog/:year/:month/:day/:title/&quot;.</span></div><div class='line' id='LC22'><span class="c1">#</span></div><div class='line' id='LC23'><span class="c1"># License:</span></div><div class='line' id='LC24'><span class="c1"># --------</span></div><div class='line' id='LC25'><span class="c1"># Distributed under the [MIT License][MIT].</span></div><div class='line' id='LC26'><span class="c1">#</span></div><div class='line' id='LC27'><span class="c1"># [MIT]: http://www.opensource.org/licenses/mit-license.php</span></div><div class='line' id='LC28'><span class="c1">#</span></div><div class='line' id='LC29'><br/></div><div class='line' id='LC30'><span class="nb">require</span> <span class="s1">&#39;./plugins/post_filters.rb&#39;</span></div><div class='line' id='LC31'><span class="nb">require</span> <span class="s1">&#39;./plugins/image_tag.rb&#39;</span></div><div class='line' id='LC32'><br/></div><div class='line' id='LC33'><span class="k">module</span> <span class="nn">Jekyll</span></div><div class='line' id='LC34'>&nbsp;&nbsp;<span class="no">BOUND_FILE_MATCHER</span> <span class="o">=</span> <span class="sr">/^(.+\/)*(\d+-\d+-\d+)-(.*)_(.*)(\.[^.]+)$/</span></div><div class='line' id='LC35'><br/></div><div class='line' id='LC36'>&nbsp;&nbsp;<span class="k">class</span> <span class="nc">Post</span></div><div class='line' id='LC37'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kp">attr_accessor</span> <span class="ss">:base</span></div><div class='line' id='LC38'><br/></div><div class='line' id='LC39'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">valid?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span></div><div class='line' id='LC40'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="nb">name</span> <span class="o">=~</span> <span class="no">MATCHER</span></div><div class='line' id='LC41'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span> <span class="o">=</span> <span class="kp">true</span></div><div class='line' id='LC42'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="nb">name</span> <span class="o">=~</span> <span class="ss">Jekyll</span><span class="p">:</span><span class="ss">:BOUND_FILE_MATCHER</span></div><div class='line' id='LC43'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span> <span class="o">=</span> <span class="kp">false</span></div><div class='line' id='LC44'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC45'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">else</span></div><div class='line' id='LC46'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span> <span class="o">=</span> <span class="kp">false</span></div><div class='line' id='LC47'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC48'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span></div><div class='line' id='LC49'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC50'><br/></div><div class='line' id='LC51'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">cleanup_bound_files</span></div><div class='line' id='LC52'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">m</span><span class="p">,</span> <span class="n">cats</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">slug</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="o">*</span><span class="nb">name</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="ss">Post</span><span class="p">:</span><span class="ss">:MATCHER</span><span class="p">)</span></div><div class='line' id='LC53'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">find_filename</span> <span class="o">=</span> <span class="o">[</span><span class="n">cats</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">slug</span><span class="p">,</span> <span class="s1">&#39;_*&#39;</span><span class="o">].</span><span class="n">join</span></div><div class='line' id='LC54'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="no">Dir</span><span class="o">[</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;_posts&#39;</span><span class="p">,</span> <span class="n">find_filename</span><span class="p">)</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span></div><div class='line' id='LC55'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="n">f</span> <span class="o">=~</span> <span class="ss">Jekyll</span><span class="p">:</span><span class="ss">:BOUND_FILE_MATCHER</span></div><div class='line' id='LC56'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">destination</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">dest</span><span class="p">))</span></div><div class='line' id='LC57'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_filename</span> <span class="o">=</span> <span class="vg">$4</span> <span class="o">+</span> <span class="vg">$5</span></div><div class='line' id='LC58'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">,</span> <span class="n">dest_filename</span><span class="p">)</span></div><div class='line' id='LC59'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="no">FileUtils</span><span class="o">.</span><span class="n">rm_f</span><span class="p">(</span><span class="n">dest_path</span><span class="p">)</span></div><div class='line' id='LC60'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC61'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC62'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC63'>&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC64'><br/></div><div class='line' id='LC65'>&nbsp;&nbsp;<span class="k">class</span> <span class="nc">Site</span></div><div class='line' id='LC66'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kp">attr_accessor</span> <span class="ss">:me</span></div><div class='line' id='LC67'><br/></div><div class='line' id='LC68'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">alias_method</span> <span class="ss">:old_filter_entries_for_file_binder</span><span class="p">,</span> <span class="ss">:filter_entries</span></div><div class='line' id='LC69'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">filter_entries</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span></div><div class='line' id='LC70'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">entries</span> <span class="o">=</span> <span class="n">old_filter_entries_for_file_binder</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span><span class="o">.</span><span class="n">reject</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span></div><div class='line' id='LC71'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span> <span class="o">=</span> <span class="kp">false</span></div><div class='line' id='LC72'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="n">e</span> <span class="o">=~</span> <span class="ss">Jekyll</span><span class="p">:</span><span class="ss">:BOUND_FILE_MATCHER</span></div><div class='line' id='LC73'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span> <span class="o">=</span> <span class="kp">true</span></div><div class='line' id='LC74'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC75'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">result</span></div><div class='line' id='LC76'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC77'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC78'><br/></div><div class='line' id='LC79'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">alias_method</span> <span class="ss">:old_cleanup_for_file_binder</span><span class="p">,</span> <span class="ss">:cleanup</span></div><div class='line' id='LC80'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">cleanup</span></div><div class='line' id='LC81'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">self</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span></div><div class='line' id='LC82'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">post</span><span class="o">.</span><span class="n">cleanup_bound_files</span></div><div class='line' id='LC83'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC84'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">old_cleanup_for_file_binder</span></div><div class='line' id='LC85'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC86'>&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC87'><br/></div><div class='line' id='LC88'>&nbsp;&nbsp;<span class="k">module</span> <span class="nn">Convertible</span></div><div class='line' id='LC89'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">alias_method</span> <span class="ss">:old_do_layout_for_file_binder</span><span class="p">,</span> <span class="ss">:do_layout</span></div><div class='line' id='LC90'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">do_layout</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">layouts</span><span class="p">)</span></div><div class='line' id='LC91'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nb">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">me</span> <span class="o">=</span> <span class="nb">self</span></div><div class='line' id='LC92'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">old_do_layout_for_file_binder</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">layouts</span><span class="p">)</span></div><div class='line' id='LC93'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC94'>&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC95'><br/></div><div class='line' id='LC96'>&nbsp;&nbsp;<span class="k">class</span> <span class="nc">FileBinder</span> <span class="o">&lt;</span> <span class="no">PostFilter</span></div><div class='line' id='LC97'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">post_write</span><span class="p">(</span><span class="n">post</span><span class="p">)</span></div><div class='line' id='LC98'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">m</span><span class="p">,</span> <span class="n">cats</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">slug</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="o">*</span><span class="n">post</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="ss">Post</span><span class="p">:</span><span class="ss">:MATCHER</span><span class="p">)</span></div><div class='line' id='LC99'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">find_filename</span> <span class="o">=</span> <span class="o">[</span><span class="n">cats</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">slug</span><span class="p">,</span> <span class="s1">&#39;_*&#39;</span><span class="o">].</span><span class="n">join</span></div><div class='line' id='LC100'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="no">Dir</span><span class="o">[</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;_posts&#39;</span><span class="p">,</span> <span class="n">find_filename</span><span class="p">)</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span></div><div class='line' id='LC101'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="n">f</span> <span class="o">=~</span> <span class="ss">Jekyll</span><span class="p">:</span><span class="ss">:BOUND_FILE_MATCHER</span></div><div class='line' id='LC102'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">src_path</span> <span class="o">=</span> <span class="n">f</span></div><div class='line' id='LC103'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">destination</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">dest</span><span class="p">))</span></div><div class='line' id='LC104'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_filename</span> <span class="o">=</span> <span class="vg">$4</span> <span class="o">+</span> <span class="vg">$5</span></div><div class='line' id='LC105'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">dest_path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest_dir</span><span class="p">,</span> <span class="n">dest_filename</span><span class="p">)</span></div><div class='line' id='LC106'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="no">FileUtils</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">)</span></div><div class='line' id='LC107'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC108'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC109'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC110'>&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC111'><br/></div><div class='line' id='LC112'>&nbsp;&nbsp;<span class="k">class</span> <span class="nc">ImageTag</span></div><div class='line' id='LC113'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">alias_method</span> <span class="ss">:old_render_for_file_binder</span><span class="p">,</span> <span class="ss">:render</span></div><div class='line' id='LC114'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div><div class='line' id='LC115'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="vi">@img</span><span class="o">[</span><span class="s1">&#39;src&#39;</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^\.\/(.*)$/</span></div><div class='line' id='LC116'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">me</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">registers</span><span class="o">[</span><span class="ss">:site</span><span class="o">].</span><span class="n">me</span></div><div class='line' id='LC117'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="n">me</span><span class="o">.</span><span class="n">class</span> <span class="o">==</span> <span class="ss">Jekyll</span><span class="p">:</span><span class="ss">:Post</span></div><div class='line' id='LC118'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="no">ENV</span><span class="o">.</span><span class="n">has_key?</span><span class="p">(</span><span class="s1">&#39;OCTOPRESS_ENV&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OCTOPRESS_ENV&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;preview&#39;</span></div><div class='line' id='LC119'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:4000/&#39;</span></div><div class='line' id='LC120'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">else</span></div><div class='line' id='LC121'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">url</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">registers</span><span class="o">[</span><span class="ss">:site</span><span class="o">].</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;url&#39;</span><span class="o">]</span></div><div class='line' id='LC122'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC123'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">[-</span><span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span> <span class="p">?</span> <span class="n">url</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">-</span><span class="mi">2</span><span class="o">]</span> <span class="p">:</span> <span class="n">url</span></div><div class='line' id='LC124'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="vi">@img</span><span class="o">[</span><span class="s1">&#39;src&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="n">me</span><span class="o">.</span><span class="n">url</span> <span class="o">+</span> <span class="vg">$1</span></div><div class='line' id='LC125'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC126'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC127'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">old_render_for_file_binder</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div><div class='line' id='LC128'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC129'>&nbsp;&nbsp;<span class="k">end</span></div><div class='line' id='LC130'><br/></div><div class='line' id='LC131'><span class="k">end</span></div><div class='line' id='LC132'><br/></div></pre></div>
+          </td>
+        </tr>
+      </table>
+  </div>
+
+          </div>
+        </div>
+
+        <a href="#jump-to-line" rel="facebox" data-hotkey="l" class="js-jump-to-line" style="display:none">Jump to Line</a>
+        <div id="jump-to-line" style="display:none">
+          <h2>Jump to Line</h2>
+          <form accept-charset="UTF-8" class="js-jump-to-line-form">
+            <input class="textfield js-jump-to-line-field" type="text">
+            <div class="full-button">
+              <button type="submit" class="button">Go</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+</div>
+
+<div id="js-frame-loading-template" class="frame frame-loading large-loading-area" style="display:none;">
+  <img class="js-frame-loading-spinner" src="https://a248.e.akamai.net/assets.github.com/images/spinners/octocat-spinner-128.gif?1360648847" height="64" width="64">
+</div>
+
+
+        </div>
+      </div>
+      <div class="context-overlay"></div>
+    </div>
+
+      <div id="footer-push"></div><!-- hack for sticky footer -->
+    </div><!-- end of wrapper - hack for sticky footer -->
+
+      <!-- footer -->
+      <div id="footer">
+  <div class="container clearfix">
+
+      <dl class="footer_nav">
+        <dt>GitHub</dt>
+        <dd><a href="https://github.com/about">About us</a></dd>
+        <dd><a href="https://github.com/blog">Blog</a></dd>
+        <dd><a href="https://github.com/contact">Contact &amp; support</a></dd>
+        <dd><a href="http://enterprise.github.com/">GitHub Enterprise</a></dd>
+        <dd><a href="http://status.github.com/">Site status</a></dd>
+      </dl>
+
+      <dl class="footer_nav">
+        <dt>Applications</dt>
+        <dd><a href="http://mac.github.com/">GitHub for Mac</a></dd>
+        <dd><a href="http://windows.github.com/">GitHub for Windows</a></dd>
+        <dd><a href="http://eclipse.github.com/">GitHub for Eclipse</a></dd>
+        <dd><a href="http://mobile.github.com/">GitHub mobile apps</a></dd>
+      </dl>
+
+      <dl class="footer_nav">
+        <dt>Services</dt>
+        <dd><a href="http://get.gaug.es/">Gauges: Web analytics</a></dd>
+        <dd><a href="http://speakerdeck.com">Speaker Deck: Presentations</a></dd>
+        <dd><a href="https://gist.github.com">Gist: Code snippets</a></dd>
+        <dd><a href="http://jobs.github.com/">Job board</a></dd>
+      </dl>
+
+      <dl class="footer_nav">
+        <dt>Documentation</dt>
+        <dd><a href="http://help.github.com/">GitHub Help</a></dd>
+        <dd><a href="http://developer.github.com/">Developer API</a></dd>
+        <dd><a href="http://github.github.com/github-flavored-markdown/">GitHub Flavored Markdown</a></dd>
+        <dd><a href="http://pages.github.com/">GitHub Pages</a></dd>
+      </dl>
+
+      <dl class="footer_nav">
+        <dt>More</dt>
+        <dd><a href="http://training.github.com/">Training</a></dd>
+        <dd><a href="https://github.com/edu">Students &amp; teachers</a></dd>
+        <dd><a href="http://shop.github.com">The Shop</a></dd>
+        <dd><a href="/plans">Plans &amp; pricing</a></dd>
+        <dd><a href="http://octodex.github.com/">The Octodex</a></dd>
+      </dl>
+
+      <hr class="footer-divider">
+
+
+    <p class="right">&copy; 2013 <span title="0.07051s from fe4.rs.github.com">GitHub</span>, Inc. All rights reserved.</p>
+    <a class="left" href="https://github.com/">
+      <span class="mega-icon mega-icon-invertocat"></span>
+    </a>
+    <ul id="legal">
+        <li><a href="https://github.com/site/terms">Terms of Service</a></li>
+        <li><a href="https://github.com/site/privacy">Privacy</a></li>
+        <li><a href="https://github.com/security">Security</a></li>
+    </ul>
+
+  </div><!-- /.container -->
+
+</div><!-- /.#footer -->
+
+
+    <div class="fullscreen-overlay js-fullscreen-overlay" id="fullscreen_overlay">
+  <div class="fullscreen-container js-fullscreen-container">
+    <div class="textarea-wrap">
+      <textarea name="fullscreen-contents" id="fullscreen-contents" class="js-fullscreen-contents" placeholder="" data-suggester="fullscreen_suggester"></textarea>
+          <div class="suggester-container">
+              <div class="suggester fullscreen-suggester js-navigation-container" id="fullscreen_suggester"
+                 data-url="/aycabta/octopress-file-binder/suggestions/commit">
+              </div>
+          </div>
+    </div>
+  </div>
+  <div class="fullscreen-sidebar">
+    <a href="#" class="exit-fullscreen js-exit-fullscreen tooltipped leftwards" title="Exit Zen Mode">
+      <span class="mega-icon mega-icon-normalscreen"></span>
+    </a>
+    <a href="#" class="theme-switcher js-theme-switcher tooltipped leftwards"
+      title="Switch themes">
+      <span class="mini-icon mini-icon-brightness"></span>
+    </a>
+  </div>
+</div>
+
+
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="mini-icon mini-icon-exclamation"></span>
+      Something went wrong with that request. Please try again.
+      <a href="#" class="mini-icon mini-icon-remove-close ajax-error-dismiss"></a>
+    </div>
+
+    
+    
+    <span id='server_response_time' data-time='0.07098' data-host='fe4'></span>
+    
+  </body>
+</html>
 
