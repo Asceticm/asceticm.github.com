@@ -1,0 +1,312 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>数据的表示 - </title>
+	<meta name="author" content="">
+
+	
+	<meta name="description" content="
+	数据的表示
+	简介
+
+这是对《深入理解操作系统》中的第二章信息的表示和处理的一篇总结。
+
+
+孤立地讲，单个的位不是非常有用。然而，当把位组合在一起，再加上某种解释(interpretation)，即给不同的可能位模式赋予含义，我们就能够表示任何有限集合的元素。
+
+
+
+我们研究三种最重要的数...">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="" rel="alternate" title="" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            processEscapes: true
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+    all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+    });
+</script>
+
+<script type="text/javascript"
+    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/"></a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/about">About</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/about">About</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+	<form class="search" action="" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">数据的表示</h2>
+	<div class="entry-content"><h2 id='id13'>简介</h2>
+
+<p>这是对《深入理解操作系统》中的第二章信息的表示和处理的一篇总结。</p>
+
+<blockquote>
+<p>孤立地讲，单个的位不是非常有用。然而，当把位组合在一起，再加上某种解释(interpretation)，即给不同的可能位模式赋予含义，我们就能够表示任何有限集合的元素。</p>
+</blockquote>
+
+<blockquote>
+<p>我们研究三种最重要的数字表示。<strong>无符号数</strong>编码基于传统的二进制表示法，表示大于或者等于零的数字。<strong>补码</strong>编码是表示有符号整数的最常见的方式，有符号整数就是可以为正或者为负的数字。<strong>浮点数</strong>编码是表示实数的科学记述法的以二为基数的版本。</p>
+</blockquote>
+
+<h2 id='id14'>引言</h2>
+
+<h3 id='id15'>大小端</h3>
+
+<p>最低有效字节在最前面的方式，成为<strong>小端法</strong>；最高有效字节在最前面的方式，称为<strong>大端法</strong>，大多数Intel兼容机都采用后一种方式。</p>
+
+<p>字节顺序会成为问题的情形有以下两种：</p>
+
+<p>1. 在不同类型的机器之间通过网络传送二进制数据时</p>
+
+<p>2. 当阅读表示整数数据的字节序列时，字节顺序也很重要</p>
+
+<h3 id='id16'>位级运算</h3>
+
+<p>C语言的一个很有用的特性就是它支持按位布尔运算。</p>
+
+<p>确定一个位级表达式的结果最好的方法，就是将十六进制的参数扩展成二进制表示并执行二进制运算，然后再转换回十六进制。</p>
+
+<p>位级运算的一个常见用法就是实现<strong>掩码</strong>运算，这里掩码是一个位模式，表示一个从一个字中选出的位的集合。</p>
+
+<p>例如，<code>x=0x89ABCDEF,x&amp;0xFF=0x000000EF</code></p>
+
+<h3 id='id17'>逻辑运算</h3>
+
+<p>逻辑运算与位级运算的区别：</p>
+
+<ol>
+<li>逻辑运输认为所有非零的参数都表示<code>TRUE</code>，而参数0表示<code>FALSE</code>。</li>
+</ol>
+
+<p>2. 逻辑运算符<code>&amp;&amp;</code>和<code>||</code>与它们对应的位级运算<code>&amp;</code>和<code>|</code>的重要区别是，如果对第一个参数求值就能确定表达式的结果，那么逻辑运算符就不会对第二个参数求值。</p>
+
+<h3 id='id18'>移位运算</h3>
+
+<p>C表达式<code>x&lt;&lt;k</code>，x向左移动k位，丢弃最高的k位，并在右端补k个<code>0</code>。移位运算是从左至右可结合的，所以<code>x&lt;&lt;j&lt;&lt;k</code>等价于<code>(x&lt;&lt;j)&lt;&lt;k</code>。</p>
+
+<p>一般而言，机器支持两种形式的右移：逻辑右移和算术右移。逻辑右移在左端补k个0，算术右移是在左端补k个最高有效位的值。</p>
+
+<p>C语言对于无符号数据，右移必须是逻辑的。而对于有符号数据，算术的或者逻辑的右移都可以。然而，实际上，几乎所有的编译器/机器组合都对有符号数据使用算数右移。</p>
+
+<h2 id='id19'>整数表示</h2>
+
+<h3 id='id20'>无符号数的编码</h3>
+
+<p>$$B2U_{w}(\overrightarrow{x})\doteq \sum_{i=0}^{w-1}x_{i}2^{i}$$</p>
+
+<p><img alt='Unsigned' src='./images/unsigned.png' /> 例子：</p>
+
+<p>$$B2U_{4}(<span>1011</span>)=1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=8+0+4+2=11$$</p>
+
+<p>无符号数的二进制表示有一个很重要的属性，就是每个介于0~$$2_{w}-1$$之间的数都有唯一一个w位的值编码(双射)。</p>
+
+<h3 id='id21'>补码编码</h3>
+
+<p>在补码的定义中，将字的最高有效位解释为<strong>负权</strong>(negative weight)。</p>
+
+<p>$$B2T_{w}(\overrightarrow{x})\doteq -x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}$$</p>
+
+<p><img alt='twos-complement' src='./images/two.png' /></p>
+
+<p>例子：</p>
+
+<p>$$B2T_{4}(<span>1011</span>)=-1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=-8+0+2+1=-5$$</p>
+
+<p>w位补码所能表示的值的范围：</p>
+
+<p>最小值是位向量<code>[10...0]</code>,其整数值为$$TMin_{w}\doteq -2^{w-1}$$</p>
+
+<p>最大值是位向量<code>[01...1]</code>，其整数值为$$TMax_{w}\doteq \sum_{i=0}^{w-2}2^{i}=2^{w-1}-1$$</p>
+
+<p>可以看出$$B2T_{w}$$是一个从长度w的位模式到$$TMin_{w}$$和$$TMax_{w}$$之间的数字的映射(双射)。</p>
+
+<p>补码的两个特点：</p>
+
+<p>1. 补码的范围是不对称的：</p>
+
+<p>$$ \left | TMin \right | = \left | TMax \right |+1$$</p>
+
+<ol>
+<li>最大的无符号数值刚好比补码的最大值的两倍大一点：$$UMax_{w}=2TMax_{w}+1$$。</li>
+</ol>
+
+<p>注：C语言标准并没有要求用补码形式来表示有符号整数，但是几乎所有的机器都是这么做的。</p>
+
+<h3 id='id22'>有符号数和无符号数之间的转换</h3>
+
+<p>强制类型转换的结果保持位值不变，只是改变了解释这些位的方式。</p>
+
+<p>对大多数C语言的实现而言，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变。</p>
+
+<p>现将$$U2B_{w}$$定义为$$B2U_{w}^{-1}$$，而将$$T2B_{w}$$定义为$$B2T_{w}^{-1}$$。</p>
+
+<p>将函数$$U2T_{w}$$定义为$$U2T_{w}(x)\doteq B2T_{w}(U2B_{w}(x))$$，将函数$$T2U_{w}$$定义为$$T2U_{w}\doteq B2U_{w}(T2B_{w}(x))$$。</p>
+
+<p>例子：</p>
+
+<p><img alt='numbers' src='./images/num.png' /></p>
+
+<p>$$T2U_{16}(-12345)=53191$$</p>
+
+<p>$$U2T_{16}(53191)=-12345$$</p>
+
+<p>即十六进制表示写作<code>0xCFC7</code>的16位位模式既是<code>-12345</code>的补码表示，又是<code>53191</code>的无符号数表示。</p>
+
+<p><img alt='num' src='./images/convert1.png' /></p>
+
+<p>若令$$\overrightarrow{x} = T2B_{w}$$，即可得到以下公式：</p>
+
+<p>$$ B2U_{w}(T2B_{w})) = T2U_{w}(x) = x_{w-1}2^{w} + x $$</p>
+
+<p>$$ T2U_{w}(x)=\left{\begin{matrix} x+2^{w} &amp;x</p>
+
+<p><img alt='T2U' src='./images/convert2.png' /></p>
+
+<p>若令$$\overrightarrow{u} = U2B_{w}(u)$$，即可得到以下公式：</p>
+
+<p>$$ B2T_{w}(U2B_{w}(u)) = U2T_{w}(u) = -u_{w-1}2^{w}+u $$</p>
+
+<p>$$ U2T_{w}(x)=\left{\begin{matrix} u &amp; x</p>
+
+<p><img alt='U2T' src='./images/convert3.png' /></p>
+
+<p>对于在$$0\leq x &lt; 2^{w-1}$$范围之内的值x而言，我们得到$$T2U_{w}(x) = x$$和$$U2T_{w}(x) = x$$。也就是说，在这个范围内的数字有相同的无符号和补码表示。对于这个范围以外的数值，转换需要加上或者减去$$2^{w}$$。</p>
+
+<p>To be continued&#8230;</p></div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="Liquid error: undefined method `xmlschema' for "2012-12-10 22:43:00 +0800":String" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	Program
+
+
+</div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

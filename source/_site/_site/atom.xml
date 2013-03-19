@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[]]></title>
+  <link href="/atom.xml" rel="self"/>
+  <link href="/"/>
+  <updated>2013-02-01T10:16:49+08:00</updated>
+  <id>/</id>
+  <author>
+    <name><![CDATA[]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[常量]]></title>
+    <link href="/Program/2012/12/21/const.html"/>
+    <updated>2012-12-21T10:59:00+08:00</updated>
+    <id>/Program/2012/12/21/const</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第八章常量的总结。</p>
+
+<p><img alt='const' src='./images/const.png' /></p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[数据的表示]]></title>
+    <link href="/Program/2012/12/10/data-representing.html"/>
+    <updated>2012-12-10T22:43:00+08:00</updated>
+    <id>/Program/2012/12/10/data-representing</id>
+    <content type="html"><![CDATA[<h2 id='id13'>简介</h2>
+
+<p>这是对《深入理解操作系统》中的第二章信息的表示和处理的一篇总结。</p>
+
+<blockquote>
+<p>孤立地讲，单个的位不是非常有用。然而，当把位组合在一起，再加上某种解释(interpretation)，即给不同的可能位模式赋予含义，我们就能够表示任何有限集合的元素。</p>
+</blockquote>
+
+<blockquote>
+<p>我们研究三种最重要的数字表示。<strong>无符号数</strong>编码基于传统的二进制表示法，表示大于或者等于零的数字。<strong>补码</strong>编码是表示有符号整数的最常见的方式，有符号整数就是可以为正或者为负的数字。<strong>浮点数</strong>编码是表示实数的科学记述法的以二为基数的版本。</p>
+</blockquote>
+
+<h2 id='id14'>引言</h2>
+
+<h3 id='id15'>大小端</h3>
+
+<p>最低有效字节在最前面的方式，成为<strong>小端法</strong>；最高有效字节在最前面的方式，称为<strong>大端法</strong>，大多数Intel兼容机都采用后一种方式。</p>
+
+<p>字节顺序会成为问题的情形有以下两种：</p>
+
+<p>1. 在不同类型的机器之间通过网络传送二进制数据时</p>
+
+<p>2. 当阅读表示整数数据的字节序列时，字节顺序也很重要</p>
+
+<h3 id='id16'>位级运算</h3>
+
+<p>C语言的一个很有用的特性就是它支持按位布尔运算。</p>
+
+<p>确定一个位级表达式的结果最好的方法，就是将十六进制的参数扩展成二进制表示并执行二进制运算，然后再转换回十六进制。</p>
+
+<p>位级运算的一个常见用法就是实现<strong>掩码</strong>运算，这里掩码是一个位模式，表示一个从一个字中选出的位的集合。</p>
+
+<p>例如，<code>x=0x89ABCDEF,x&amp;0xFF=0x000000EF</code></p>
+
+<h3 id='id17'>逻辑运算</h3>
+
+<p>逻辑运算与位级运算的区别：</p>
+
+<ol>
+<li>逻辑运输认为所有非零的参数都表示<code>TRUE</code>，而参数0表示<code>FALSE</code>。</li>
+</ol>
+
+<p>2. 逻辑运算符<code>&amp;&amp;</code>和<code>||</code>与它们对应的位级运算<code>&amp;</code>和<code>|</code>的重要区别是，如果对第一个参数求值就能确定表达式的结果，那么逻辑运算符就不会对第二个参数求值。</p>
+
+<h3 id='id18'>移位运算</h3>
+
+<p>C表达式<code>x&lt;&lt;k</code>，x向左移动k位，丢弃最高的k位，并在右端补k个<code>0</code>。移位运算是从左至右可结合的，所以<code>x&lt;&lt;j&lt;&lt;k</code>等价于<code>(x&lt;&lt;j)&lt;&lt;k</code>。</p>
+
+<p>一般而言，机器支持两种形式的右移：逻辑右移和算术右移。逻辑右移在左端补k个0，算术右移是在左端补k个最高有效位的值。</p>
+
+<p>C语言对于无符号数据，右移必须是逻辑的。而对于有符号数据，算术的或者逻辑的右移都可以。然而，实际上，几乎所有的编译器/机器组合都对有符号数据使用算数右移。</p>
+
+<h2 id='id19'>整数表示</h2>
+
+<h3 id='id20'>无符号数的编码</h3>
+
+<p>$$B2U_{w}(\overrightarrow{x})\doteq \sum_{i=0}^{w-1}x_{i}2^{i}$$</p>
+
+<p><img alt='Unsigned' src='./images/unsigned.png' /> 例子：</p>
+
+<p>$$B2U_{4}(<span>1011</span>)=1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=8+0+4+2=11$$</p>
+
+<p>无符号数的二进制表示有一个很重要的属性，就是每个介于0~$$2_{w}-1$$之间的数都有唯一一个w位的值编码(双射)。</p>
+
+<h3 id='id21'>补码编码</h3>
+
+<p>在补码的定义中，将字的最高有效位解释为<strong>负权</strong>(negative weight)。</p>
+
+<p>$$B2T_{w}(\overrightarrow{x})\doteq -x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}$$</p>
+
+<p><img alt='twos-complement' src='./images/two.png' /></p>
+
+<p>例子：</p>
+
+<p>$$B2T_{4}(<span>1011</span>)=-1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=-8+0+2+1=-5$$</p>
+
+<p>w位补码所能表示的值的范围：</p>
+
+<p>最小值是位向量<code>[10...0]</code>,其整数值为$$TMin_{w}\doteq -2^{w-1}$$</p>
+
+<p>最大值是位向量<code>[01...1]</code>，其整数值为$$TMax_{w}\doteq \sum_{i=0}^{w-2}2^{i}=2^{w-1}-1$$</p>
+
+<p>可以看出$$B2T_{w}$$是一个从长度w的位模式到$$TMin_{w}$$和$$TMax_{w}$$之间的数字的映射(双射)。</p>
+
+<p>补码的两个特点：</p>
+
+<p>1. 补码的范围是不对称的：</p>
+
+<p>$$ \left | TMin \right | = \left | TMax \right |+1$$</p>
+
+<ol>
+<li>最大的无符号数值刚好比补码的最大值的两倍大一点：$$UMax_{w}=2TMax_{w}+1$$。</li>
+</ol>
+
+<p>注：C语言标准并没有要求用补码形式来表示有符号整数，但是几乎所有的机器都是这么做的。</p>
+
+<h3 id='id22'>有符号数和无符号数之间的转换</h3>
+
+<p>强制类型转换的结果保持位值不变，只是改变了解释这些位的方式。</p>
+
+<p>对大多数C语言的实现而言，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变。</p>
+
+<p>现将$$U2B_{w}$$定义为$$B2U_{w}^{-1}$$，而将$$T2B_{w}$$定义为$$B2T_{w}^{-1}$$。</p>
+
+<p>将函数$$U2T_{w}$$定义为$$U2T_{w}(x)\doteq B2T_{w}(U2B_{w}(x))$$，将函数$$T2U_{w}$$定义为$$T2U_{w}\doteq B2U_{w}(T2B_{w}(x))$$。</p>
+
+<p>例子：</p>
+
+<p><img alt='numbers' src='./images/num.png' /></p>
+
+<p>$$T2U_{16}(-12345)=53191$$</p>
+
+<p>$$U2T_{16}(53191)=-12345$$</p>
+
+<p>即十六进制表示写作<code>0xCFC7</code>的16位位模式既是<code>-12345</code>的补码表示，又是<code>53191</code>的无符号数表示。</p>
+
+<p><img alt='num' src='./images/convert1.png' /></p>
+
+<p>若令$$\overrightarrow{x} = T2B_{w}$$，即可得到以下公式：</p>
+
+<p>$$ B2U_{w}(T2B_{w})) = T2U_{w}(x) = x_{w-1}2^{w} + x $$</p>
+
+<p>$$ T2U_{w}(x)=\left{\begin{matrix} x+2^{w} &amp;x</p>
+
+<p><img alt='T2U' src='./images/convert2.png' /></p>
+
+<p>若令$$\overrightarrow{u} = U2B_{w}(u)$$，即可得到以下公式：</p>
+
+<p>$$ B2T_{w}(U2B_{w}(u)) = U2T_{w}(u) = -u_{w-1}2^{w}+u $$</p>
+
+<p>$$ U2T_{w}(x)=\left{\begin{matrix} u &amp; x</p>
+
+<p><img alt='U2T' src='./images/convert3.png' /></p>
+
+<p>对于在$$0\leq x &lt; 2^{w-1}$$范围之内的值x而言，我们得到$$T2U_{w}(x) = x$$和$$U2T_{w}(x) = x$$。也就是说，在这个范围内的数字有相同的无符号和补码表示。对于这个范围以外的数值，转换需要加上或者减去$$2^{w}$$。</p>
+
+<p>To be continued&#8230;</p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hello World!]]></title>
+    <link href="/default/2012/12/01/hello-world.html"/>
+    <updated>2012-12-01T12:59:00+08:00</updated>
+    <id>/default/2012/12/01/hello-world</id>
+    <content type="html"><![CDATA[<p>This is my first post.</p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim配置]]></title>
+    <link href="/Program/2012/11/25/vim-plugin.html"/>
+    <updated>2012-11-25T13:53:00+08:00</updated>
+    <id>/Program/2012/11/25/vim-plugin</id>
+    <content type="html"><![CDATA[<p>本篇文章介绍VIM如何配置和一些优秀的VIM插件。</p>
+
+<p>VIM的使用因人而异，每个人有每个人的使用习惯，所以配置文件还需要各位自己参考别人的配置文件，最终写出适合自己的配置文件。否则，即使配置文件再强大，也发挥不了作用。</p>
+
+<p>网上流传一份<a href='http://www.amix.dk/vim/vimrc.html'>史上最强VIM配置文件(html高亮版)</a>，这里有<a href='http://www.amix.dk/vim/vimrc.txt'>纯txt版</a>。我的配置文件也是从中修改过来的，具有很好的参考价值。</p>
+
+<p>当然，你还可以参考<a href='https://github.com/humiaozuzu/dot-vimrc'>这里</a>，里面涵盖了不少插件的配置，我的自动补全就是从这里借鉴的。</p>
+
+<p>这里重点讲几点：</p>
+
+<h2 id='id10'>字体及主题推荐</h2>
+
+<p>推荐的编程字体为DejaVu Sans Mono，推荐的自带colorscheme koehler，当然可以去下载网上的其他颜色方案，自己看着爽就好了。</p>
+
+<h2 id='windows'>关于Windows乱码的解决</h2>
+
+<p>此处参考VIMIM给出的解决方法：</p>
+
+<pre><code>set encoding=utf-8
+if g:iswindows==1
+set termencoding=GBK
+else
+    set termencoding=utf-8
+    endif
+    set fileencoding=utf-8
+    set fileencodingileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+    set langmenu=zh_CN.utf-8
+    source $VIMRUNTIME/delmenu.vim
+    source $VIMRUNTIME/menu.vim
+    language messages zh_cn.utf-8</code></pre>
+
+<h2 id='id11'>底部状态栏的修改</h2>
+
+<p>上面的配置文件的状态栏只能显示所在行，我们可以添加上所在列。</p>
+
+<pre><code>set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ POS:\ %l,%v</code></pre>
+
+<h2 id='vimstrong'>VIM插件&lt;/strong&gt;</h2>
+
+<p>* 插件管理：</p>
+
+<pre><code>这里推荐使用Vundle(https://github.com/gmarik/vundle)来管理VIM插件，非常方便与实用，只需要在配置文件写一行就并执行命令，就可以实现插件的自动安装与卸载。
+
+- 首先，你需要安装git(此部分略去)。
+- 然后按照Vundle的说明执行就好了。
+
+在命令行下执行：
+
+    git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+然后按照说明在配置文件中写入下面部分(当然插件可以自己选了)：
+
+    set nocompatible               &quot; be iMproved
+    filetype off                   &quot; required!
+
+    set rtp+=~/.vim/bundle/vundle/
+    call vundle#rc()
+
+    &quot; let Vundle manage Vundle
+    &quot; required! 
+    Bundle &#39;gmarik/vundle&#39;
+
+    &quot; My Bundles here:
+    &quot;
+    &quot; original repos on github
+    Bundle &#39;tpope/vim-fugitive&#39;
+    Bundle &#39;Lokaltog/vim-easymotion&#39;
+    Bundle &#39;rstacruz/sparkup&#39;, {&#39;rtp&#39;: &#39;vim/&#39;}
+    Bundle &#39;tpope/vim-rails.git&#39;
+    &quot; vim-scripts repos
+    Bundle &#39;L9&#39;
+    Bundle &#39;FuzzyFinder&#39;
+    &quot; non github repos
+    Bundle &#39;git://git.wincent.com/command-t.git&#39;
+    &quot; ...
+
+    filetype plugin indent on     &quot; required!
+
+然后在VIM中执行:BundleInstall，它就会自动帮你安装插件了。&lt;/li&gt;</code></pre>
+
+<ul>
+<li>
+<p>NerDTree:</p>
+
+<p>虽然说VIM自带文件管理的功能，但是比起NerDTree还是不够方便。推荐的NerDTree配置如下，快捷键映射为F7：</p>
+
+<pre><code>let NERDTreeChDirMode=2
+let NERDTreeWinSize=30
+let NERDTreeWinPos = &quot;right&quot;
+let NERDTreeIgnore=[&#39;\.vim$&#39;, &#39;\~$&#39;, &#39;\.pyc$&#39;, &#39;\.swp$&#39;]
+let NERDTreeSortOrder=[&#39;^__\.py$&#39;, &#39;\/$&#39;, &#39;*&#39;, &#39;\.swp$&#39;,  &#39;\~$&#39;]
+nmap &lt;F7&gt; :NERDTreeToggle&lt;CR&gt;</code></pre>
+</li>
+</ul>
+
+<h2 id='id12'>自动补全：</h2>
+
+<p>想必使用VIM码代码的人最需要的功能就是这个了吧，我使用的是neocomplcache+snipmate+supertab，借鉴了上面提到的配置文件，配置如下：</p>
+
+<pre><code>&quot; neocomplcache
+
+&quot; Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+&quot; Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+&quot; Use underbar completion.
+let g:neocomplcache_enable_underbar_completion = 1
+let g:neocomplcache_disable_auto_complete=1
+let g:neocomplcache_min_syntax_length=3
+set completeopt-=preview
+
+&quot; SuperTab
+
+let g:SuperTabRetainCompletiontype = 2
+let g:supertabdefaultcompletionType = &quot;&lt;C-X&gt;&lt;C-U&gt;&quot;</code></pre>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim进阶]]></title>
+    <link href="/Program/2012/11/24/vim-advanced.html"/>
+    <updated>2012-11-24T11:44:00+08:00</updated>
+    <id>/Program/2012/11/24/vim-advanced</id>
+    <content type="html"><![CDATA[<p>仅仅学习了vim的基础操作并不能使你高效地使用vim编辑文档，你不仅需要知道各种tips，还需要有一个强有力的vimrc以及各种插件辅助。</p>
+
+<p>我最初是阅读易水寒的<a href='http://easwy.com/blog/archives/advanced-vim-skills-catalog/'>vi/vim使用进阶</a>系列文章，并根据自己的需要进行了取舍。</p>
+
+<p>如果您是一名程序员，那么强烈建议你阅读 user_29.txt Moving through programs user_30.txt Editing programs</p>
+
+<p>这里还要推荐一篇的文章，Vim作者Bram Moolenaar写的<a href='http://www.moolenaar.net/habits.html'>Seven habits of effective text editing</a>，这里有<a href='http://www.newsmth.net/bbscon.php?bid=731&amp;id=353'>中文版</a>。</p>
+
+<p>文章中强调了如何提高编辑文本效率的方法：</p>
+
+<p>* 在进行编辑，主要重复进行的操作 * 找出能快速进行这些操作的编辑命令 * 进行练习，熟练为止</p>
+
+<p>其中还要注意一个误区：VIM中有着多种多样的操作命令，不要试图为一点小事找出完美的命令。</p>
+
+<p>好了，下面进入正题。此篇文章主要介绍vim的一些进阶Tips。</p>
+
+<h2 id='tip_1'>Tip 1:快速移动定位</h2>
+
+<p>* 行内快速移动到指定字符：</p>
+
+<pre><code>`fx`,就会移动到光标右侧第一个x上；`Fx`，就会移动到光标左侧第一个x上。</code></pre>
+
+<ul>
+<li>
+<p>k 程序间的移动：</p>
+
+<p>在编写函数时，有时需要跳转到本函数的开头。使用<code>[[</code>命令，即可跳转到最外层的括号{处。同样还有一系列命令可以在注释，宏以及小括号之间移动，具体请参见29.3。</p>
+</li>
+</ul>
+
+<p>* 重绘(光标所在行不变，屏幕重绘)：</p>
+
+<pre><code>光标不动，并使其所在行处于窗口顶端：`z`
+
+光标不动，并使其所在行处于窗口中部：`z.i`
+
+光标不动，并使其所在行处于窗口底端：`z-`</code></pre>
+
+<h2 id='tip_2strong'>Tip 2:标签文件及使用：&lt;/strong&gt;</h2>
+
+<p>* 快速跳转：</p>
+
+<pre><code>实现跳转需要使用标签文件，我们一般使用[Exuberant Ctags](http://ctags.sourceforge.net/)。安装完成后，在你的项目目录下执行`Ctags -R`就会生成一个tags文件。进入vim后，找到你想要跳转的函数，然后按Ctrl+]即可跳转到函数的定义处。
+
+PS:如果你的项目有多个目录，那你需要在项目根目录下生成tags文件，进入vim后手动加载tags文件。`:set tag=../../tags`
+
+也可以通过在vimrc中写入相关内容自动加载或者使用插件，不过还是推荐手动加载。</code></pre>
+
+<p>* 函数预览及定位:</p>
+
+<pre><code>- 当你在调用某一函数，却不知道形参类型时，Preview window刚好可以帮上忙。
+
+`：ptag writer`,`CTRL-W }`这两个命令即可将函数的定义在预览窗口显示出来，前提是你加载了tag文件。
+
+关闭预览窗口的命令为`:pc`。
+
+- 如果你需要查看文件外的变量定义，可以使用`[I`，如果是查看宏定义的话，使用`[D`。</code></pre>
+
+<h2 id='tip_3'>Tip 3:其他</h2>
+
+<p>* 缩进：</p>
+
+<pre><code>有时候从其他文件复制过来的段落缩进十分混乱，vim中可以非常方便地调整缩进，选中需要调整的部分然后按`=`</code></pre>
+
+<p>* 区块编辑：</p>
+
+<pre><code>有时候，你可能需要在几句代码之前添加`//`，以忽略这些语句。此时按`CTRL-v`进入块可视模式，从第一行行首向下移动到最后一行，然后按`I`，进入插入模式，输入`//`(注：此时只有一行显示改变)，然后`ESC`，修改就完成了。</code></pre>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim初步]]></title>
+    <link href="/Program/2012/11/24/vim-basic.html"/>
+    <updated>2012-11-24T10:31:00+08:00</updated>
+    <id>/Program/2012/11/24/vim-basic</id>
+    <content type="html"><![CDATA[<p>作为一个文本编辑器，Vim具有所有文本编辑器应有的功能，而且更有其他文本编辑器所无法比拟的特性。</p>
+
+<p>本篇着重介绍VIM中最基本的功能，如果之前没有接触过VIM，建议阅读VIM自带的30分钟教程，直接在终端键入vimtutor，或者去安装目录中找vimtutor.bat。</p>
+
+<p>如果实在不想看E文的帮助，<a href='http://vimcdoc.sourceforge.net/'>这里</a>有中文的vimdoc。</p>
+
+<p>VIM有着非常陡峭的学习曲线，所以请各位学习VIM的同志们保持耐心。</p>
+
+<h2 id='id2'>三种模式</h2>
+
+<p>VIM中常用的模式有三种：普通模式(normal)、插入模式(insert)、可视模式(visual)。</p>
+
+<p>* 普通模式：</p>
+
+<pre><code>这种模式下可以执行一般的编辑器命令，移动光标、删除文本等，是VIM启动后的默认模式。可以说VIM强大的编辑能力很大程度上源于此模式。</code></pre>
+
+<p>* 插入模式：</p>
+
+<pre><code>此模式下，大部分按键都会向文本缓冲区中插入文本。&lt;/li&gt;</code></pre>
+
+<p>* 可视模式：</p>
+
+<pre><code>此模式下，移动光标可以选中文本，用于替换和复制等。&lt;/li&gt;&lt;/ul&gt;</code></pre>
+
+<p>PS:在VIM配置文件中键盘映射nmap,imap,vmap的映射分别对应三种模式。&lt;/li&gt;</p>
+
+<h2 id='id3'>模式转换</h2>
+
+<p>由普通模式进入插入模式有许多方法最常用的为以下几种：</p>
+
+<ul>
+<li>在光标所在位置之前插入: <code>i</code></li>
+
+<li>在光标所在位置后插入：<code>a</code></li>
+
+<li>在本行行尾插入:<code>A</code></li>
+
+<li>在本行行首插入：<code>I</code></li>
+
+<li>替换当前光标所在字符：<code>r</code></li>
+</ul>
+
+<p>由Normal模式进入可视模式：</p>
+
+<ul>
+<li>普通可视模式：<code>v</code></li>
+
+<li>块可视模式: <code>Ctrl+v</code></li>
+
+<li>返回普通模式：<code>Esc</code></li>
+</ul>
+
+<p>PS:VIM中大部分命令都有以下两种操作格式：</p>
+
+<pre><code>[number] command object
+command [number] object</code></pre>
+
+<p>其中第一个命令是进行number次命令，第二个命令是对number个对象进行command动作</p>
+
+<h2 id='id4'>基础移动</h2>
+
+<ul>
+<li>上下左右：<code>(count)kjhl</code></li>
+
+<li>上下翻页(一整页)：<code>CTRL-f</code>,<code>CRTL-b</code></li>
+
+<li>上下翻页(半页)：<code>CTRL-u</code>,<code>CTRL-d</code></li>
+</ul>
+
+<h2 id='id5'>移动进阶</h2>
+
+<p>* 移动到行末：<code>$</code></p>
+
+<ul>
+<li>移动到行首：<code>0</code>，<code>^</code>(第一个字符)</li>
+
+<li>移动到下个单词词首：<code>w</code></li>
+
+<li>移动到上个单词词首：<code>b</code></li>
+
+<li>移动到下个单词词末：<code>E</code></li>
+
+<li>移动到上个单词词首：<code>e</code></li>
+
+<li>移动到文件开头：<code>gg</code></li>
+
+<li>移动到文件结束：<code>G</code></li>
+</ul>
+
+<h2 id='id6'>撤消与恢复</h2>
+
+<ul>
+<li>撤消一次: <code>u</code></li>
+
+<li>撤消所有动作：<code>U</code></li>
+
+<li>恢复：<code>Ctrl+R</code></li>
+</ul>
+
+<h2 id='id7'>剪切与复制</h2>
+
+<p>* 剪切：</p>
+
+<pre><code>其实VIM中的删除操作都是剪切，将当前删除的部分存入寄存器&quot;&quot;，但是仅能缓存上一次的操作内容</code></pre>
+
+<p>* 复制：</p>
+
+<pre><code>在可视模式下选中需要复制内容，按`y`，或者在之前指定寄存器。如果需要整行复制，`(count)yy`</code></pre>
+
+<p>* 粘贴：</p>
+
+<pre><code>在普通模式下：`p`
+
+不知道有没有人纠结于从VIM中复制文本，此处说明一下VIM的寄存器，VIM中共有9种寄存器，此处仅介绍5种：
+
+    * 无名（unnamed）寄存器：&quot;&quot;，上面讲到过来，缓存最后一次操作内容
+    * 数字（numbered）寄存器：&quot;0 - &quot;9，缓存最近操作内容，复制与删除有别
+    * 具名（named）寄存器：&quot;a - &quot;z或&quot;A - &quot;Z，指定时可用
+    * 选择及拖拽（selection and drop）寄存器：&quot;*, &quot;+, &quot;~，可用于与外部应用交互，使用前提为系统剪切板可用
+    * 模式寄存器（last search pattern）：&quot;/，缓存最近的搜索模式</code></pre>
+
+<h2 id='id8'>搜索与替换</h2>
+
+<p>* 搜索与替换搜索：</p>
+
+<pre><code>`/`，从当前光标所在位置向下搜索
+
+`？`，从当前光标所在位置向上搜索</code></pre>
+
+<p>* 替换：</p>
+
+<pre><code>此处仅说明最简单的一种情况，在可视模式下选中需要被替换的内容区域，`:s/被替换部分/替换部分/gc`。最后的gc说明替换模式，g代表全局替换，c代表需要确认</code></pre>
+
+<h2 id='id9'>保存与退出</h2>
+
+<pre><code>* `:q!` 强制退出，不保存。其中!代表强制
+* `:wq` 保存并退出</code></pre>
+
+<p>注：学习VIM最重要的是善于运用<code>:h</code></p>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Keep Going]]></title>
+    <link href="/archive/2012/11/08/Keep-Going.html"/>
+    <updated>2012-11-08T14:59:00+08:00</updated>
+    <id>/archive/2012/11/08/Keep-Going</id>
+    <content type="html"><![CDATA[<h2 id='id1'>新的开始，新的故事</h2>
+
+<p>考虑了蛮久的，也尝试了好久，最后还是决定将博客迁到这里。</p>
+
+<p>Typecho是个不错的博客程序，轻量、快速、便捷。但是好的系统自然需要一个好的生态,很遗憾，Typecho的生态并不丰富。而与Jekyll相比，Typecho的轻量又没有了优势。</p>
+
+<p>毋庸置疑，当今博客的主流仍然是Wordpress。但是Wordpress的臃肿与缓慢，又被许多人所诟病。虽然前阵子看到了<a href='http://www.ifanr.com/189450'>Ghost:博客工具的“简单主意&#8221;</a>,但是项目仍未成型，前景未卜，喜欢Wordpress的朋友倒是可以去关注下。</p>
+
+<p>既然搬迁到了Jekyll就把配置过程记录一下，其实过程是有些曲折的。</p>
+
+<h2 id='jekyll'>Jekyll入门</h2>
+
+<p>我一开始是参考<a href='http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html'>搭建一个免费的，无限流量的Blog&#8212;-github Pages和Jekyll入门</a>这篇文章来配置的，但是需要注意的是，gh-pages是用来生成项目介绍网站的，所以文章中是生成了gh-pages分支。而如果你想要配置域名为<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;userid&gt;.github.com这样的个人博客，需要新建一个名为&lt;userid&gt;.github.com的项目，上传文件到此项目中即可，不需要生成gh-pages分支。</pre></p>
+
+<p>而有关Jekyll的配置，就需要去参考<a href='https://github.com/mojombo/jekyll/wiki'>官方文档</a>了。这里倒是有一份<a href='https://github.com/pizn/blogTheme/tree/master/BlackCubeTheme'>BlackCube的主题代码</a>可以参考下。</p>
+
+<h2 id='git'>Git入门</h2>
+
+<p>学习Git最好就是看文档了，推荐两份：<a href='http://roclinux.cn/?p=914'>看日记学git</a>,<a href='http://gitbook.liuhui998.com/'>git community book中文版</a></p>
+
+<h2 id='jekyll'>Jekyll本地调试</h2>
+
+<p>其实当初原本是想用Octpress的，但是Octpress要求Ruby 1.9.3，当时鼓捣了好久没配好，- -！。后来想想算了，就用了Jekyll。当时配了十多次，硬是没有配成功，最后终于找到了篇靠谱的文章配好了，就是这篇<a href='http://ruby-china.org/wiki/install_ruby_guide'>如何快速正确的安装 Ruby, Rails 运行环境</a> (还是官方Wiki靠谱。。。)。其实Jekyll可以说是原生支持目录的，因为在<a href='https://github.com/mojombo/jekyll/wiki/Plugins'>Plugins</a>的说明中就提及了。具体的实现可以参考这里，<a href='[Plugins](https://github.com/mojombo/jekyll/wiki/Plugins'>为Jekyll博客添加category分类</a></p>]]></content>
+  </entry>
+  
+</feed>
