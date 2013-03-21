@@ -81,3 +81,9 @@ categories: archive
 ##代码高亮
 
 高亮代码使用codeblock即可。
+
+##read_yaml错误
+
+今天很诡异地发现`rake generate`竟然通不过了，然后`rake preview`也没有新的文章了，然后在网上google了方法竟然都没有用。
+
+我的这边提示是`invalid byte sequence in utf-8`，然后看到网上一个网友提示说，查找下文章中的非法字符。反复查找后发现，由于我使用了filebinder，图片文件是和文章放在一起的，然后最近的一个图片的名字格式命名错误，改完后一切OK。
