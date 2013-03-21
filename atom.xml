@@ -1,0 +1,1004 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Ascetic.m]]></title>
+  <link href="http://Asceticm.github.com/atom.xml" rel="self"/>
+  <link href="http://Asceticm.github.com/"/>
+  <updated>2013-03-21T19:54:38+08:00</updated>
+  <id>http://Asceticm.github.com/</id>
+  <author>
+    <name><![CDATA[Ascetic.m]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[运载符重载]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/19/operator-overloading/"/>
+    <updated>2013-03-19T21:58:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/19/operator-overloading</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第十二章运算符重载的总结。</p>
+
+<p><img src="http://Asceticm.github.com/blog/2013/03/19/operator-overloading/OperatorOverloading.png" title="OperatorOverloading" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Yii框架中的权限使用]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/16/yii-auth/"/>
+    <updated>2013-03-16T11:05:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/16/yii-auth</id>
+    <content type="html"><![CDATA[<p>权限功能的一直是各个PHP框架中比较核心的一个功能，只需要少量代码即可实现较复杂的权限管理。</p>
+
+<p>Yii框架亦如此，但是使用框架中的权限功能还是需要一定的学习成本。这里分享一些自己学习和使用的经验。主要参考了Yii框架官方文档中的<a href="http://www.yiiframework.com/doc/guide/1.1/zh_cn/topics.auth">授权和验证</a>部分，Yii权限扩展模块<a href="http://code.google.com/p/yii-rights/">Rights</a>以及Yii的<a href="http://www.yiiframework.com/doc/api/1.1/CAuthManager">CAuthManager</a>接口文档。</p>
+
+<!-- more -->
+
+<h2 id="section">基于角色的访问控制</h2>
+
+<p>由于项目中的权限需求比较复杂，所以直接使用了基于角色的访问控制(Role-Based Access Control)。</p>
+
+<p>Yii框架的RBAC中，将权限分为三层：操作(operations)，任务(tasks)和角色(roles)。操作是权限中的最底层，是包含最少动作的一个集合(Rights中将每一个action视为一个Opreation，当然你也可以自己定义)；任务由若干操作组成，(Rights将一个Controller视作一个Task）；角色则由若干任务组成。为了保持灵活性，Yii允许同层的权限相互包含：一个操作可以包含其他操作，一个任务可以包含其他任务，一个角色可以包含其他角色。</p>
+
+<p>操作，任务和角色都是授权项目(authorization item)，可以理解为某个行为的许可。</p>
+
+<p>如果以上还不足以满足你的需求，那就需要利用业务规则了。一个业务规则就是一段PHP代码，在执行权限的时候被检查。例如在创建权限的时候，添加业务规则：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="x">$bizRule=&#39;return Yii::app()-&gt;user-&gt;id==$params[&quot;post&quot;]-&gt;authID;&#39;;</span>
+</span><span class="line"><span class="x">$task=$auth-&gt;createTask(&#39;updateOwnPost&#39;,&#39;update a post by author himself&#39;,$bizRule);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><em>注：写入业务规则的时候不要忘记分号，否则是无效的。</em></p>
+
+<p>在检查权限的时候传入参数，使业务规则作用：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="x">$params=array(&#39;post&#39;=&gt;$post);</span>
+</span><span class="line"><span class="x">if(Yii::app()-&gt;user-&gt;checkAccess(&#39;updateOwnPost&#39;,$params))</span>
+</span><span class="line"><span class="x">    //Some action</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="rights">Rights</h2>
+
+<p>Rights拥有一个可视化编辑的界面，以及自动进行权限检验的功能。Rights的安装在其<a href="http://yii-rights.googlecode.com/files/yii-rights-doc-1.2.0.pdf">说明文档</a>中有详细的说明，此处不再说明。</p>
+
+<p>如果需要使用Rights的自动检验功能，需要使你的Controller继承RController。并且在Controller里添加以下代码：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="x">public function filters()</span>
+</span><span class="line"><span class="x">{</span>
+</span><span class="line"><span class="x">    return array(</span>
+</span><span class="line"><span class="x">    &#39;rights&#39;,</span>
+</span><span class="line"><span class="x">    );</span>
+</span><span class="line"><span class="x">}</span>
+</span><span class="line"><span class="x">public function allowedActions()</span>
+</span><span class="line"><span class="x">{</span>
+</span><span class="line"><span class="x">    return &#39;index, suggestedTags&#39;;</span>
+</span><span class="line"><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>其中，allowedActions是不需要权限检验即可访问的Action。</p>
+
+<h2 id="section-1">权限接口</h2>
+
+<p>在实际使用到权限的时候，可能需要使用Yii提供的权限接口。具体可以参考<a href="http://www.yiiframework.com/doc/api/1.1/CAuthManager">这里</a>，需要注意的是，有些方法虽然只差了一个s，但是相差甚远，比如getAuthItem()和getAuthItems()，前面一个返回CAuthItem，而后面一个返回的却是一个Array()。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[jQuery使用相关]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/14/jquery-utilize/"/>
+    <updated>2013-03-14T17:41:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/14/jquery-utilize</id>
+    <content type="html"><![CDATA[<p>最近接触到一些Javascript，感觉Ajax比较强大，比PHP这样的服务器端脚本灵活许多。由于自己本身不会JS，也就只能边搜索边用，好在有jQuery，用起来真的比较方便。</p>
+
+<p>使用到的插件有时间选择插件<a href="http://jqueryui.com/datepicker/">jQuery-UI-datePicker</a>和<a href="http://trentrichardson.com/examples/timepicker/">jQuery-UI-TimePicker-addon</a>以及分页插件<a href="http://www.datatables.net/">dataTables</a>。</p>
+
+<!-- more -->
+
+<h2 id="jquery-ui-datepickerjquery-ui-timepicker">jQuery-UI-datePicker和jQuery-UI-TimePicker</h2>
+
+<p>TimePicker实际是datePicker的一个插件，需要嵌入datePicke中使用。由于项目中有限制时间选择区间的需求，可以借助Timepicker中的<code>minDateTime</code>和<code>maxDateTime</code>参数实现。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line"><span class="kd">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">getDay</span><span class="p">()</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">maxDate</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+</span><span class="line"><span class="nx">limit</span><span class="p">.</span><span class="nx">setDate</span><span class="p">(</span><span class="nx">temp</span><span class="p">);</span>
+</span><span class="line"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#targetID&#39;</span><span class="p">).</span><span class="nx">datetimepicker</span><span class="p">({</span>
+</span><span class="line">    <span class="nx">showSecond</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">timeFormat</span><span class="o">:</span> <span class="s1">&#39;HH:mm:ss&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">stepHour</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">stepMinute</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">stepSecond</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">minDateTime</span><span class="o">:</span> <span class="nx">current</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">maxDateTime</span><span class="o">:</span> <span class="nx">maxDate</span><span class="p">,</span>
+</span><span class="line"><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="datatables">dataTables</h2>
+
+<p>dataTables的数据来源有四种：DOM,Javascript数组，Ajax源以及服务器端数据。由于项目中的数据比较多，所以选择了最后一种。具体的可以参考<a href="http://www.datatables.net/examples/data_sources/server_side.html">官方文档</a>。</p>
+
+<p>dataTables的初始化：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line"><span class="kd">var</span> <span class="nx">oTable</span><span class="o">=</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#jq_tablepage&#39;</span><span class="p">).</span><span class="nx">dataTable</span><span class="p">({</span>
+</span><span class="line">        <span class="s2">&quot;bSort&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class="line">        <span class="s2">&quot;bPaginate&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class="line">        <span class="s2">&quot;bJQueryUI&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class="line">        <span class="s2">&quot;sPaginationType&quot;</span><span class="o">:</span> <span class="s2">&quot;full_numbers&quot;</span><span class="p">,</span>
+</span><span class="line">        <span class="s2">&quot;sAjaxSource&quot;</span><span class="o">:</span> <span class="s2">&quot;../examples_support/server_processing.php&quot;</span>
+</span><span class="line">        <span class="s2">&quot;oLanguage&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s2">&quot;sUrl&quot;</span><span class="o">:</span> <span class="s2">&quot;./js/datatable.language&quot;</span><span class="p">}</span>
+</span><span class="line">        <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ajax向服务器请求数据是传入的参数有：显示起始数<code>iDisplayStart</code>，显示条目数<code>iDisplayLength</code>，排序列数目<code>iSortingClos</code>，排序列<code>iSortingClo_1</code>以及搜索条件<code>sSearch</code>。</p>
+
+<p>其中，服务器端需要返回的数据格式如下。</p>
+
+<p>Liquid error: ClassNotFound: no lexer for alias ‘PHP’ found</p>
+
+<p>sEcho由前端AJAX请求产生，可以在<code>$_GET</code>中获得，<code>$iTotal</code>为查询条目总数，<code>$iFilteredTotal</code>为加上过滤条件后的条目总数，<code>aaData</code>为实际数据，格式为无Index的Json格式。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress使用归档]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/14/octopress-tips/"/>
+    <updated>2013-03-14T14:48:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/14/octopress-tips</id>
+    <content type="html"><![CDATA[<p>使用Octopress的几个小技巧和之前遇到的一些配置及使用的问题，这里整理记下来。</p>
+
+<p>主要参考了<a href="http://octopress.org/docs/blogging/plugins">Blogging With Plugins</a>，<a href="https://github.com/aycabta/octopress-file-binder">File Binder</a>以及<a href="http://yanping.me/cn/blog/2012/03/10/octopress-with-latex/">在Octopress中使用Latex</a>。</p>
+
+<!-- more -->
+
+<h2 id="octopress">Octopress中图片的插入</h2>
+
+<p>换了个主题以后，发现之前的图片显示不了了，然后查了下文档顺便Google了一下。发现以前的链接写错了，而且Octopress自带有<a href="http://octopress.org/docs/plugins/image-tag/">Image Tag</a>的插件。</p>
+
+<p>原生的方法是，上传图片到<code>source/images/</code>下，然后按照Markdown的写法就好了，注意链接的形式是<code>/images/name</code>。当然还可以使用image插件写成</p>
+
+<pre><code>&lt;img class="[classname]" src="http://Asceticm.github.com/path/to/image"&gt;
+</code></pre>
+
+<p>还有一个File Binder的第三方插件可以将图片放到<code>sources/_posts/YYYY-DD-MM-title_imagename.png</code>(文章位置为<code>sources/_posts/YYYY-DD-MM-title.markdown</code>)，插入图片时，应写成</p>
+
+<pre><code>&lt;img src="http://Asceticm.github.com/blog/2013/03/14/octopress-tips/imagename.png"&gt;
+</code></pre>
+
+<p>详见<a href="https://github.com/aycabta/octopress-file-binder">File Binder</a>。</p>
+
+<h2 id="octopress-1">Octopress在不同机子之间的拷贝</h2>
+
+<p>如果你有多个工作机，你可能需要将Octopress从github上拷贝一份。</p>
+
+<pre><code>git fetch git@github.com:Username/username.github.com source:master
+</code></pre>
+
+<h2 id="octopress-2">Octopress主页省略显示文章</h2>
+
+<p>开始我检查了一下<code>_config.yml</code>中的<code>excerpt_link</code>参数，已经配置好了。但是首页依旧全文显示文章。后来发现需要在文章中间插入<code>&lt;!-- more --&gt;</code>，这样此标志后的文章就会在首页隐藏，变成<code>excerpt_link</code>配置的文字。</p>
+
+<h2 id="octopresslatex">在Octopress中使用Latex</h2>
+
+<p>先安装kramdown包</p>
+
+<pre><code>gem install kramdown
+</code></pre>
+
+<p>再将下面的代码插入<code>&lt;head&gt;</code>和<code>&lt;/head&gt;</code>标签中间，就OK了（文件路径是<code>/source/_include/custom/head.html</code>）。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="c">&lt;!--</span> <span class="nx">mathjax</span> <span class="nx">config</span> <span class="nx">similar</span> <span class="nx">to</span> <span class="nx">math</span><span class="p">.</span><span class="nx">stackexchange</span> <span class="o">--&gt;</span>
+</span><span class="line">
+</span><span class="line">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/x-mathjax-config&quot;</span><span class="o">&gt;</span>
+</span><span class="line">    <span class="nx">MathJax</span><span class="p">.</span><span class="nx">Hub</span><span class="p">.</span><span class="nx">Config</span><span class="p">({</span>
+</span><span class="line">    <span class="nx">tex2jax</span><span class="o">:</span> <span class="p">{</span>
+</span><span class="line">    <span class="nx">inlineMath</span><span class="o">:</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;$&#39;</span><span class="p">,</span><span class="s1">&#39;$&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;\\(&quot;</span><span class="p">,</span><span class="s2">&quot;\\)&quot;</span><span class="p">]</span> <span class="p">],</span>
+</span><span class="line">    <span class="nx">processEscapes</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span><span class="line">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span class="line">
+</span><span class="line">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/x-mathjax-config&quot;</span><span class="o">&gt;</span>
+</span><span class="line">    <span class="nx">MathJax</span><span class="p">.</span><span class="nx">Hub</span><span class="p">.</span><span class="nx">Config</span><span class="p">({</span>
+</span><span class="line">    <span class="nx">tex2jax</span><span class="o">:</span> <span class="p">{</span>
+</span><span class="line">    <span class="nx">skipTags</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;noscript&#39;</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">,</span> <span class="s1">&#39;textarea&#39;</span><span class="p">,</span> <span class="s1">&#39;pre&#39;</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">]</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span><span class="line">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span class="line">
+</span><span class="line">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/x-mathjax-config&quot;</span><span class="o">&gt;</span>
+</span><span class="line">    <span class="nx">MathJax</span><span class="p">.</span><span class="nx">Hub</span><span class="p">.</span><span class="nx">Queue</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">            <span class="kd">var</span> <span class="nx">all</span> <span class="o">=</span> <span class="nx">MathJax</span><span class="p">.</span><span class="nx">Hub</span><span class="p">.</span><span class="nx">getAllJax</span><span class="p">(),</span> <span class="nx">i</span><span class="p">;</span>
+</span><span class="line">            <span class="k">for</span><span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">all</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">            <span class="nx">all</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">SourceElement</span><span class="p">().</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">className</span> <span class="o">+=</span> <span class="s1">&#39; has-jax&#39;</span><span class="p">;</span>
+</span><span class="line">            <span class="p">}</span>
+</span><span class="line">            <span class="p">});</span>
+</span><span class="line">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span class="line">
+</span><span class="line">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span>
+</span><span class="line">    <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;</span><span class="o">&gt;</span>
+</span><span class="line">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section">代码高亮</h2>
+
+<p>高亮代码使用codeblock即可。</p>
+
+<h2 id="readyaml">read_yaml错误</h2>
+
+<p>今天很诡异地发现<code>rake generate</code>竟然通不过了，然后<code>rake preview</code>也没有新的文章了，然后在网上google了方法竟然都没有用。</p>
+
+<p>我的这边提示是<code>invalid byte sequence in utf-8</code>，然后看到网上一个网友提示说，查找下文章中的非法字符。反复查找后发现，由于我使用了filebinder，图片文件是和文章放在一起的，然后最近的一个图片的名字格式命名错误，改完后一切OK。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[引用和拷贝构造函数]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/03/copy-constructor/"/>
+    <updated>2013-03-03T15:42:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/03/copy-constructor</id>
+    <content type="html"><![CDATA[<p>这是一篇关于《C++编程思想》第十一章引用和拷贝构造函数的总结。</p>
+
+<p><img src="http://Asceticm.github.com/blog/2013/03/03/copy-constructor/copyconstructor.png" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[常量]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/12/21/const/"/>
+    <updated>2012-12-21T10:59:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/12/21/const</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第八章常量的总结。</p>
+
+<p><img src="http://Asceticm.github.com/blog/2012/12/21/const/const.png" title="const" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[数据的表示]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/12/10/data-representing/"/>
+    <updated>2012-12-10T22:43:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/12/10/data-representing</id>
+    <content type="html"><![CDATA[<h2 id="section">简介</h2>
+
+<p>这是对《深入理解操作系统》中的第二章信息的表示和处理的一篇总结。</p>
+
+<blockquote>
+  <p>孤立地讲，单个的位不是非常有用。然而，当把位组合在一起，再加上某种解释(interpretation)，即给不同的可能位模式赋予含义，我们就能够表示任何有限集合的元素。</p>
+</blockquote>
+
+<blockquote>
+  <p>我们研究三种最重要的数字表示。<strong>无符号数</strong>编码基于传统的二进制表示法，表示大于或者等于零的数字。<strong>补码</strong>编码是表示有符号整数的最常见的方式，有符号整数就是可以为正或者为负的数字。<strong>浮点数</strong>编码是表示实数的科学记述法的以二为基数的版本。</p>
+</blockquote>
+
+<!-- more -->
+
+<h2 id="section-1">引言</h2>
+
+<h3 id="section-2">大小端</h3>
+
+<p>最低有效字节在最前面的方式，成为<strong>小端法</strong>；最高有效字节在最前面的方式，称为<strong>大端法</strong>，大多数Intel兼容机都采用后一种方式。</p>
+
+<p>字节顺序会成为问题的情形有以下两种：</p>
+
+<ol>
+  <li>
+    <p>在不同类型的机器之间通过网络传送二进制数据时</p>
+  </li>
+  <li>
+    <p>当阅读表示整数数据的字节序列时，字节顺序也很重要</p>
+  </li>
+</ol>
+
+<h3 id="section-3">位级运算</h3>
+
+<p>C语言的一个很有用的特性就是它支持按位布尔运算。</p>
+
+<p>确定一个位级表达式的结果最好的方法，就是将十六进制的参数扩展成二进制表示并执行二进制运算，然后再转换回十六进制。</p>
+
+<p>位级运算的一个常见用法就是实现<strong>掩码</strong>运算，这里掩码是一个位模式，表示一个从一个字中选出的位的集合。</p>
+
+<p>例如，<code>x=0x89ABCDEF,x&amp;0xFF=0x000000EF</code></p>
+
+<h3 id="section-4">逻辑运算</h3>
+
+<p>逻辑运算与位级运算的区别：</p>
+
+<ol>
+  <li>
+    <p>逻辑运输认为所有非零的参数都表示<code>TRUE</code>，而参数0表示<code>FALSE</code>。</p>
+  </li>
+  <li>
+    <p>逻辑运算符<code>&amp;&amp;</code>和<code>||</code>与它们对应的位级运算<code>&amp;</code>和<code>|</code>的重要区别是，如果对第一个参数求值就能确定表达式的结果，那么逻辑运算符就不会对第二个参数求值。</p>
+  </li>
+</ol>
+
+<h3 id="section-5">移位运算</h3>
+
+<p>C表达式<code>x&lt;&lt;k</code>，x向左移动k位，丢弃最高的k位，并在右端补k个<code>0</code>。移位运算是从左至右可结合的，所以<code>x&lt;&lt;j&lt;&lt;k</code>等价于<code>(x&lt;&lt;j)&lt;&lt;k</code>。</p>
+
+<p>一般而言，机器支持两种形式的右移：逻辑右移和算术右移。逻辑右移在左端补k个0，算术右移是在左端补k个最高有效位的值。</p>
+
+<p>C语言对于无符号数据，右移必须是逻辑的。而对于有符号数据，算术的或者逻辑的右移都可以。然而，实际上，几乎所有的编译器/机器组合都对有符号数据使用算数右移。</p>
+
+<h2 id="section-6">整数表示</h2>
+
+<h3 id="section-7">无符号数的编码</h3>
+
+<script type="math/tex; mode=display">B2U_{w}(\overrightarrow{x})\doteq \sum_{i=0}^{w-1}x_{i}2^{i}</script>
+
+<p><img src="http://Asceticm.github.com/images/unsigned.png" alt="Unsigned" />
+例子：</p>
+
+<script type="math/tex; mode=display">B2U_{4}([1011])=1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=8+0+4+2=11</script>
+
+<p>无符号数的二进制表示有一个很重要的属性，就是每个介于0~<script type="math/tex">2_{w}-1</script>之间的数都有唯一一个w位的值编码(双射)。</p>
+
+<h3 id="section-8">补码编码</h3>
+
+<p>在补码的定义中，将字的最高有效位解释为<strong>负权</strong>(negative weight)。</p>
+
+<script type="math/tex; mode=display">B2T_{w}(\overrightarrow{x})\doteq -x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}</script>
+
+<p><img src="http://Asceticm.github.com/images/two.png" alt="two's-complement" /></p>
+
+<p>例子：</p>
+
+<script type="math/tex; mode=display">B2T_{4}([1011])=-1\cdot 2^{3}+0\cdot 2^{2}+1\cdot 2^{1}+1\cdot 2^{0}=-8+0+2+1=-5</script>
+
+<p>w位补码所能表示的值的范围：</p>
+
+<p>最小值是位向量<code>[10...0]</code>,其整数值为<script type="math/tex">TMin_{w}\doteq -2^{w-1}</script></p>
+
+<p>最大值是位向量<code>[01...1]</code>，其整数值为<script type="math/tex">TMax_{w}\doteq \sum_{i=0}^{w-2}2^{i}=2^{w-1}-1</script></p>
+
+<p>可以看出<script type="math/tex">B2T_{w}</script>是一个从长度w的位模式到<script type="math/tex">TMin_{w}</script>和<script type="math/tex">TMax_{w}</script>之间的数字的映射(双射)。</p>
+
+<p>补码的两个特点：</p>
+
+<ol>
+  <li>
+    <p>补码的范围是不对称的：</p>
+
+    <table>
+      <tbody>
+        <tr>
+          <td>$$ \left</td>
+          <td>TMin \right</td>
+          <td>= \left</td>
+          <td>TMax \right</td>
+          <td>+1$$</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p>最大的无符号数值刚好比补码的最大值的两倍大一点：<script type="math/tex">UMax_{w}=2TMax_{w}+1</script>。</p>
+  </li>
+</ol>
+
+<p>注：C语言标准并没有要求用补码形式来表示有符号整数，但是几乎所有的机器都是这么做的。</p>
+
+<h3 id="section-9">有符号数和无符号数之间的转换</h3>
+
+<p>强制类型转换的结果保持位值不变，只是改变了解释这些位的方式。</p>
+
+<p>对大多数C语言的实现而言，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变。</p>
+
+<p>现将<script type="math/tex">U2B_{w}</script>定义为<script type="math/tex">B2U_{w}^{-1}</script>，而将<script type="math/tex">T2B_{w}</script>定义为<script type="math/tex">B2T_{w}^{-1}</script>。</p>
+
+<p>将函数<script type="math/tex">U2T_{w}</script>定义为<script type="math/tex">U2T_{w}(x)\doteq B2T_{w}(U2B_{w}(x))</script>，将函数<script type="math/tex">T2U_{w}</script>定义为<script type="math/tex">T2U_{w}\doteq B2U_{w}(T2B_{w}(x))</script>。</p>
+
+<p>例子：</p>
+
+<p><img src="http://Asceticm.github.com/images/num.png" alt="numbers" /></p>
+
+<script type="math/tex; mode=display">T2U_{16}(-12345)=53191</script>
+
+<script type="math/tex; mode=display">U2T_{16}(53191)=-12345</script>
+
+<p>即十六进制表示写作<code>0xCFC7</code>的16位位模式既是<code>-12345</code>的补码表示，又是<code>53191</code>的无符号数表示。</p>
+
+<p><img src="http://Asceticm.github.com/images/convert1.png" alt="num" /></p>
+
+<p>若令<script type="math/tex">\overrightarrow{x} = T2B_{w}</script>，即可得到以下公式：</p>
+
+<script type="math/tex; mode=display">
+B2U_{w}(T2B_{w})) = T2U_{w}(x) = x_{w-1}2^{w} + x
+</script>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+
+T2U_{w}(x)=\left\{\begin{matrix}
+x+2^{w} &x<0 \\ 
+x & x\geq 0
+\end{matrix}\right.
+ %]]&gt;</script>
+
+<p><img src="./images/convert2.png" alt="T2U" /></p>
+
+<p>若令<script type="math/tex">\overrightarrow{u} = U2B_{w}(u)</script>，即可得到以下公式：</p>
+
+<script type="math/tex; mode=display">
+B2T_{w}(U2B_{w}(u)) = U2T_{w}(u) = -u_{w-1}2^{w}+u
+</script>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+
+U2T_{w}(x)=\left\{\begin{matrix}
+u & x<2^{w-1} \\ 
+u-2^{w} & x\geq2^{w-1}
+\end{matrix}\right.
+ %]]&gt;</script>
+
+<p><img src="./images/convert3.png" alt="U2T" /></p>
+
+<p>对于在<script type="math/tex">% &lt;![CDATA[
+0\leq x < 2^{w-1} %]]&gt;</script>范围之内的值x而言，我们得到<script type="math/tex">T2U_{w}(x) = x</script>和<script type="math/tex">U2T_{w}(x) = x</script>。也就是说，在这个范围内的数字有相同的无符号和补码表示。对于这个范围以外的数值，转换需要加上或者减去<script type="math/tex">2^{w}</script>。</p>
+
+<p>To be continued…</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hello World!]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/12/01/hello-world/"/>
+    <updated>2012-12-01T12:59:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/12/01/hello-world</id>
+    <content type="html"><![CDATA[<p>This is my first post.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim配置]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/11/25/vim-plugin/"/>
+    <updated>2012-11-25T13:53:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/11/25/vim-plugin</id>
+    <content type="html"><![CDATA[<p>本篇文章介绍VIM如何配置和一些优秀的VIM插件。</p>
+
+<p>VIM的使用因人而异，每个人有每个人的使用习惯，所以配置文件还需要各位自己参考别人的配置文件，最终写出适合自己的配置文件。否则，即使配置文件再强大，也发挥不了作用。</p>
+
+<p>网上流传一份<a href="http://www.amix.dk/vim/vimrc.html">史上最强VIM配置文件(html高亮版)</a>，这里有<a href="http://www.amix.dk/vim/vimrc.txt">纯txt版</a>。我的配置文件也是从中修改过来的，具有很好的参考价值。</p>
+
+<p>当然，你还可以参考<a href="https://github.com/humiaozuzu/dot-vimrc">这里</a>，里面涵盖了不少插件的配置，我的自动补全就是从这里借鉴的。</p>
+
+<!-- more -->
+
+<p>这里重点讲几点：</p>
+
+<h2 id="section">字体及主题推荐</h2>
+
+<p>推荐的编程字体为DejaVu Sans Mono，推荐的自带colorscheme koehler，当然可以去下载网上的其他颜色方案，自己看着爽就好了。</p>
+
+<h2 id="windows">关于Windows乱码的解决</h2>
+
+<p>此处参考VIMIM给出的解决方法：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="k">set</span> <span class="nb">encoding</span><span class="p">=</span>utf<span class="m">-8</span>
+</span><span class="line"><span class="k">if</span> <span class="k">g</span>:iswindows<span class="p">==</span><span class="m">1</span>
+</span><span class="line"><span class="k">set</span> <span class="nb">termencoding</span><span class="p">=</span>GBK
+</span><span class="line"><span class="k">else</span>
+</span><span class="line">    <span class="k">set</span> <span class="nb">termencoding</span><span class="p">=</span>utf<span class="m">-8</span>
+</span><span class="line">    <span class="k">endif</span>
+</span><span class="line">    <span class="k">set</span> <span class="nb">fileencoding</span><span class="p">=</span>utf<span class="m">-8</span>
+</span><span class="line">    <span class="k">set</span> fileencodingileencodings<span class="p">=</span>ucs<span class="p">-</span>bom<span class="p">,</span>utf<span class="m">-8</span><span class="p">,</span>cp936<span class="p">,</span>gb18030<span class="p">,</span>big5<span class="p">,</span>euc<span class="p">-</span>jp<span class="p">,</span>euc<span class="p">-</span>kr<span class="p">,</span>latin1
+</span><span class="line">    <span class="k">set</span> <span class="nb">langmenu</span><span class="p">=</span>zh_CN.utf<span class="m">-8</span>
+</span><span class="line">    source $VIMRUNTIME/delmenu.<span class="k">vim</span>
+</span><span class="line">    source $VIMRUNTIME/menu.<span class="k">vim</span>
+</span><span class="line">    <span class="k">language</span> <span class="k">messages</span> zh_cn.utf<span class="m">-8</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-1">底部状态栏的修改</h2>
+
+<p>上面的配置文件的状态栏只能显示所在行，我们可以添加上所在列。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">    <span class="k">set</span> <span class="nb">statusline</span><span class="p">=</span>\ %{HasPaste<span class="p">()</span>}%F%<span class="k">m</span>%<span class="k">r</span>%<span class="k">h</span>\ %<span class="k">w</span>\ \ CWD:\ %<span class="k">r</span>%{getcwd<span class="p">()</span>}%<span class="k">h</span>\ \ \ POS:\ %<span class="k">l</span><span class="p">,</span>%<span class="k">v</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="vimstrong">VIM插件&lt;/strong&gt;</h2>
+
+<ul>
+  <li>
+    <p>插件管理：</p>
+
+    <p>这里推荐使用Vundle(https://github.com/gmarik/vundle)来管理VIM插件，非常方便与实用，只需要在配置文件写一行就并执行命令，就可以实现插件的自动安装与卸载。</p>
+
+    <ul>
+      <li>首先，你需要安装git(此部分略去)。</li>
+      <li>然后按照Vundle的说明执行就好了。</li>
+    </ul>
+
+    <p>在命令行下执行：</p>
+  </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<pre><code>然后按照说明在配置文件中写入下面部分(当然插件可以自己选了)：
+</code></pre>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="k">set</span> <span class="nb">nocompatible</span>               <span class="c">&quot; be iMproved</span>
+</span><span class="line"><span class="k">filetype</span> off                   <span class="c">&quot; required!</span>
+</span><span class="line">
+</span><span class="line"><span class="k">set</span> <span class="nb">rtp</span><span class="p">+=~</span><span class="sr">/.vim/</span>bundle<span class="sr">/vundle/</span>
+</span><span class="line"><span class="k">call</span> vundle#rc<span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; let Vundle manage Vundle</span>
+</span><span class="line"><span class="c">&quot; required! </span>
+</span><span class="line">Bundle <span class="s1">&#39;gmarik/vundle&#39;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; My Bundles here:</span>
+</span><span class="line"><span class="c">&quot;</span>
+</span><span class="line"><span class="c">&quot; original repos on github</span>
+</span><span class="line">Bundle <span class="s1">&#39;tpope/vim-fugitive&#39;</span>
+</span><span class="line">Bundle <span class="s1">&#39;Lokaltog/vim-easymotion&#39;</span>
+</span><span class="line">Bundle <span class="s1">&#39;rstacruz/sparkup&#39;</span><span class="p">,</span> {<span class="s1">&#39;rtp&#39;</span>: <span class="s1">&#39;vim/&#39;</span>}
+</span><span class="line">Bundle <span class="s1">&#39;tpope/vim-rails.git&#39;</span>
+</span><span class="line"><span class="c">&quot; vim-scripts repos</span>
+</span><span class="line">Bundle <span class="s1">&#39;L9&#39;</span>
+</span><span class="line">Bundle <span class="s1">&#39;FuzzyFinder&#39;</span>
+</span><span class="line"><span class="c">&quot; non github repos</span>
+</span><span class="line">Bundle <span class="s1">&#39;git://git.wincent.com/command-t.git&#39;</span>
+</span><span class="line"><span class="c">&quot; ...</span>
+</span><span class="line">
+</span><span class="line"><span class="k">filetype</span> plugin indent <span class="k">on</span>     <span class="c">&quot; required!</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<pre><code>然后在VIM中执行:BundleInstall，它就会自动帮你安装插件了。&lt;/li&gt;
+</code></pre>
+
+<ul>
+  <li>
+    <p>NerDTree:</p>
+
+    <p>虽然说VIM自带文件管理的功能，但是比起NerDTree还是不够方便。推荐的NerDTree配置如下，快捷键映射为F7：</p>
+  </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="k">let</span> NERDTreeChDirMode<span class="p">=</span><span class="m">2</span>
+</span><span class="line"><span class="k">let</span> NERDTreeWinSize<span class="p">=</span><span class="m">30</span>
+</span><span class="line"><span class="k">let</span> NERDTreeWinPos <span class="p">=</span> <span class="s2">&quot;right&quot;</span>
+</span><span class="line"><span class="k">let</span> NERDTreeIgnore<span class="p">=</span>[<span class="s1">&#39;\.vim$&#39;</span><span class="p">,</span> <span class="s1">&#39;\~$&#39;</span><span class="p">,</span> <span class="s1">&#39;\.pyc$&#39;</span><span class="p">,</span> <span class="s1">&#39;\.swp$&#39;</span>]
+</span><span class="line"><span class="k">let</span> NERDTreeSortOrder<span class="p">=</span>[<span class="s1">&#39;^__\.py$&#39;</span><span class="p">,</span> <span class="s1">&#39;\/$&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;\.swp$&#39;</span><span class="p">,</span>  <span class="s1">&#39;\~$&#39;</span>]
+</span><span class="line">nmap <span class="p">&lt;</span>F7<span class="p">&gt;</span> :NERDTreeToggle<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-2">自动补全：</h2>
+
+<p>想必使用VIM码代码的人最需要的功能就是这个了吧，我使用的是neocomplcache+snipmate+supertab，借鉴了上面提到的配置文件，配置如下：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="c">&quot; neocomplcache</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Use neocomplcache.</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:neocomplcache_enable_at_startup <span class="p">=</span> <span class="m">1</span>
+</span><span class="line"><span class="c">&quot; Use smartcase.</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:neocomplcache_enable_smart_case <span class="p">=</span> <span class="m">1</span>
+</span><span class="line"><span class="c">&quot; Use underbar completion.</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:neocomplcache_enable_underbar_completion <span class="p">=</span> <span class="m">1</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:neocomplcache_disable_auto_complete<span class="p">=</span><span class="m">1</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:neocomplcache_min_syntax_length<span class="p">=</span><span class="m">3</span>
+</span><span class="line"><span class="k">set</span> <span class="nb">completeopt</span><span class="p">-=</span>preview
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; SuperTab</span>
+</span><span class="line">
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:SuperTabRetainCompletiontype <span class="p">=</span> <span class="m">2</span>
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:supertabdefaultcompletionType <span class="p">=</span> <span class="s2">&quot;&lt;C-X&gt;&lt;C-U&gt;&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim进阶]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/11/24/vim-advanced/"/>
+    <updated>2012-11-24T11:44:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/11/24/vim-advanced</id>
+    <content type="html"><![CDATA[<p>仅仅学习了vim的基础操作并不能使你高效地使用vim编辑文档，你不仅需要知道各种tips，还需要有一个强有力的vimrc以及各种插件辅助。</p>
+
+<p>我最初是阅读易水寒的<a href="http://easwy.com/blog/archives/advanced-vim-skills-catalog/">vi/vim使用进阶</a>系列文章，并根据自己的需要进行了取舍。</p>
+
+<p>如果您是一名程序员，那么强烈建议你阅读
+    user<em>29.txt Moving through programs
+    user</em>30.txt Editing programs</p>
+
+<p>这里还要推荐一篇的文章，Vim作者Bram Moolenaar写的<a href="http://www.moolenaar.net/habits.html">Seven habits of effective text editing</a>，这里有<a href="http://www.newsmth.net/bbscon.php?bid=731&amp;id=353">中文版</a>。</p>
+
+<p>文章中强调了如何提高编辑文本效率的方法：</p>
+
+<ul>
+  <li>在进行编辑，主要重复进行的操作</li>
+  <li>找出能快速进行这些操作的编辑命令</li>
+  <li>进行练习，熟练为止</li>
+</ul>
+
+<p>其中还要注意一个误区：VIM中有着多种多样的操作命令，不要试图为一点小事找出完美的命令。</p>
+
+<!-- more -->
+
+<p>好了，下面进入正题。此篇文章主要介绍vim的一些进阶Tips。</p>
+
+<h2 id="tip-1">Tip 1:快速移动定位</h2>
+
+<ul>
+  <li>
+    <p>行内快速移动到指定字符：</p>
+
+    <p><code>fx</code>,就会移动到光标右侧第一个x上；<code>Fx</code>，就会移动到光标左侧第一个x上。</p>
+  </li>
+  <li>
+    <p>k 程序间的移动：</p>
+
+    <p>在编写函数时，有时需要跳转到本函数的开头。使用<code>[[</code>命令，即可跳转到最外层的括号{处。同样还有一系列命令可以在注释，宏以及小括号之间移动，具体请参见29.3。</p>
+  </li>
+  <li>
+    <p>重绘(光标所在行不变，屏幕重绘)：</p>
+
+    <p>光标不动，并使其所在行处于窗口顶端：<code>z</code></p>
+
+    <p>光标不动，并使其所在行处于窗口中部：<code>z.i</code></p>
+
+    <p>光标不动，并使其所在行处于窗口底端：<code>z-</code></p>
+  </li>
+</ul>
+
+<h2 id="tip-2strong">Tip 2:标签文件及使用：&lt;/strong&gt;</h2>
+
+<ul>
+  <li>
+    <p>快速跳转：</p>
+
+    <p>实现跳转需要使用标签文件，我们一般使用<a href="http://ctags.sourceforge.net/">Exuberant Ctags</a>。安装完成后，在你的项目目录下执行<code>Ctags -R</code>就会生成一个tags文件。进入vim后，找到你想要跳转的函数，然后按Ctrl+]即可跳转到函数的定义处。</p>
+
+    <p>PS:如果你的项目有多个目录，那你需要在项目根目录下生成tags文件，进入vim后手动加载tags文件。<code>:set tag=../../tags</code></p>
+
+    <p>也可以通过在vimrc中写入相关内容自动加载或者使用插件，不过还是推荐手动加载。</p>
+  </li>
+  <li>
+    <p>函数预览及定位:</p>
+
+    <ul>
+      <li>当你在调用某一函数，却不知道形参类型时，Preview window刚好可以帮上忙。</li>
+    </ul>
+
+    <p><code>：ptag writer</code>,<code>CTRL-W }</code>这两个命令即可将函数的定义在预览窗口显示出来，前提是你加载了tag文件。</p>
+
+    <p>关闭预览窗口的命令为<code>:pc</code>。</p>
+
+    <ul>
+      <li>如果你需要查看文件外的变量定义，可以使用<code>[I</code>，如果是查看宏定义的话，使用<code>[D</code>。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="tip-3">Tip 3:其他</h2>
+
+<ul>
+  <li>
+    <p>缩进：</p>
+
+    <p>有时候从其他文件复制过来的段落缩进十分混乱，vim中可以非常方便地调整缩进，选中需要调整的部分然后按<code>=</code></p>
+  </li>
+  <li>
+    <p>区块编辑：</p>
+
+    <p>有时候，你可能需要在几句代码之前添加<code>//</code>，以忽略这些语句。此时按<code>CTRL-v</code>进入块可视模式，从第一行行首向下移动到最后一行，然后按<code>I</code>，进入插入模式，输入<code>//</code>(注：此时只有一行显示改变)，然后<code>ESC</code>，修改就完成了。</p>
+  </li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vim初步]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/11/24/vim-basic/"/>
+    <updated>2012-11-24T10:31:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/11/24/vim-basic</id>
+    <content type="html"><![CDATA[<p>作为一个文本编辑器，Vim具有所有文本编辑器应有的功能，而且更有其他文本编辑器所无法比拟的特性。</p>
+
+<p>本篇着重介绍VIM中最基本的功能，如果之前没有接触过VIM，建议阅读VIM自带的30分钟教程，直接在终端键入vimtutor，或者去安装目录中找vimtutor.bat。</p>
+
+<p>如果实在不想看E文的帮助，<a href="http://vimcdoc.sourceforge.net/">这里</a>有中文的vimdoc。</p>
+
+<p>VIM有着非常陡峭的学习曲线，所以请各位学习VIM的同志们保持耐心。</p>
+
+<!-- more -->
+
+<h2 id="section">三种模式</h2>
+
+<p>VIM中常用的模式有三种：普通模式(normal)、插入模式(insert)、可视模式(visual)。</p>
+
+<ul>
+  <li>
+    <p>普通模式：</p>
+
+    <p>这种模式下可以执行一般的编辑器命令，移动光标、删除文本等，是VIM启动后的默认模式。可以说VIM强大的编辑能力很大程度上源于此模式。</p>
+  </li>
+  <li>
+    <p>插入模式：</p>
+
+    <p>此模式下，大部分按键都会向文本缓冲区中插入文本。&lt;/li&gt;</p>
+  </li>
+  <li>
+    <p>可视模式：</p>
+
+    <p>此模式下，移动光标可以选中文本，用于替换和复制等。&lt;/li&gt;&lt;/ul&gt;</p>
+  </li>
+</ul>
+
+<p>PS:在VIM配置文件中键盘映射nmap,imap,vmap的映射分别对应三种模式。&lt;/li&gt;</p>
+
+<h2 id="section-1">模式转换</h2>
+
+<p>由普通模式进入插入模式有许多方法最常用的为以下几种：</p>
+
+<ul>
+  <li>在光标所在位置之前插入: <code>i</code></li>
+  <li>在光标所在位置后插入：<code>a</code></li>
+  <li>在本行行尾插入:<code>A</code></li>
+  <li>在本行行首插入：<code>I</code></li>
+  <li>替换当前光标所在字符：<code>r</code></li>
+</ul>
+
+<p>由Normal模式进入可视模式：</p>
+
+<ul>
+  <li>普通可视模式：<code>v</code></li>
+  <li>块可视模式: <code>Ctrl+v</code></li>
+  <li>返回普通模式：<code>Esc</code></li>
+</ul>
+
+<p>PS:VIM中大部分命令都有以下两种操作格式：</p>
+
+<pre><code>[number] command object
+command [number] object
+</code></pre>
+
+<p>其中第一个命令是进行number次命令，第二个命令是对number个对象进行command动作</p>
+
+<h2 id="section-2">基础移动</h2>
+
+<ul>
+  <li>上下左右：<code>(count)kjhl</code></li>
+  <li>上下翻页(一整页)：<code>CTRL-f</code>,<code>CRTL-b</code></li>
+  <li>上下翻页(半页)：<code>CTRL-u</code>,<code>CTRL-d</code></li>
+</ul>
+
+<h2 id="section-3">移动进阶</h2>
+
+<ul>
+  <li>移动到行末：<code>$</code></li>
+  <li>移动到行首：<code>0</code>，<code>^</code>(第一个字符)</li>
+  <li>移动到下个单词词首：<code>w</code></li>
+  <li>移动到上个单词词首：<code>b</code></li>
+  <li>移动到下个单词词末：<code>E</code></li>
+  <li>移动到上个单词词首：<code>e</code></li>
+  <li>移动到文件开头：<code>gg</code></li>
+  <li>移动到文件结束：<code>G</code></li>
+</ul>
+
+<h2 id="section-4">撤消与恢复</h2>
+
+<ul>
+  <li>撤消一次: <code>u</code></li>
+  <li>撤消所有动作：<code>U</code></li>
+  <li>恢复：<code>Ctrl+R</code></li>
+</ul>
+
+<h2 id="section-5">剪切与复制</h2>
+
+<ul>
+  <li>
+    <p>剪切：</p>
+
+    <p>其实VIM中的删除操作都是剪切，将当前删除的部分存入寄存器”“，但是仅能缓存上一次的操作内容</p>
+  </li>
+  <li>
+    <p>复制：</p>
+
+    <p>在可视模式下选中需要复制内容，按<code>y</code>，或者在之前指定寄存器。如果需要整行复制，<code>(count)yy</code></p>
+  </li>
+  <li>
+    <p>粘贴：</p>
+
+    <p>在普通模式下：<code>p</code></p>
+
+    <p>不知道有没有人纠结于从VIM中复制文本，此处说明一下VIM的寄存器，VIM中共有9种寄存器，此处仅介绍5种：</p>
+
+    <pre><code>* 无名（unnamed）寄存器：""，上面讲到过来，缓存最后一次操作内容
+* 数字（numbered）寄存器："0 - "9，缓存最近操作内容，复制与删除有别
+* 具名（named）寄存器："a - "z或"A - "Z，指定时可用
+* 选择及拖拽（selection and drop）寄存器："*, "+, "~，可用于与外部应用交互，使用前提为系统剪切板可用
+* 模式寄存器（last search pattern）："/，缓存最近的搜索模式
+</code></pre>
+  </li>
+</ul>
+
+<h2 id="section-6">搜索与替换</h2>
+
+<ul>
+  <li>
+    <p>搜索与替换搜索：</p>
+
+    <p><code>/</code>，从当前光标所在位置向下搜索</p>
+
+    <p><code>？</code>，从当前光标所在位置向上搜索</p>
+  </li>
+  <li>
+    <p>替换：</p>
+
+    <p>此处仅说明最简单的一种情况，在可视模式下选中需要被替换的内容区域，<code>:s/被替换部分/替换部分/gc</code>。最后的gc说明替换模式，g代表全局替换，c代表需要确认</p>
+  </li>
+</ul>
+
+<h2 id="section-7">保存与退出</h2>
+<pre><code>* `:q!` 强制退出，不保存。其中!代表强制
+* `:wq` 保存并退出
+</code></pre>
+
+<p>注：学习VIM最重要的是善于运用<code>:h</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Keep Going]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/11/08/Keep-Going/"/>
+    <updated>2012-11-08T14:59:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/11/08/Keep-Going</id>
+    <content type="html"><![CDATA[<h2 id="section">新的开始，新的故事</h2>
+
+<p>考虑了蛮久的，也尝试了好久，最后还是决定将博客迁到这里。</p>
+
+<p>Typecho是个不错的博客程序，轻量、快速、便捷。但是好的系统自然需要一个好的生态,很遗憾，Typecho的生态并不丰富。而与Jekyll相比，Typecho的轻量又没有了优势。</p>
+
+<p>毋庸置疑，当今博客的主流仍然是Wordpress。但是Wordpress的臃肿与缓慢，又被许多人所诟病。虽然前阵子看到了<a href="http://www.ifanr.com/189450">Ghost:博客工具的“简单主意”</a>,但是项目仍未成型，前景未卜，喜欢Wordpress的朋友倒是可以去关注下。</p>
+
+<p>既然搬迁到了Jekyll就把配置过程记录一下，其实过程是有些曲折的。</p>
+
+<h2 id="jekyll">Jekyll入门</h2>
+
+<p>我一开始是参考<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog—-github Pages和Jekyll入门</a>这篇文章来配置的，但是需要注意的是，gh-pages是用来生成项目介绍网站的，所以文章中是生成了gh-pages分支。而如果你想要配置域名为<userid>.github.com这样的个人博客，需要新建一个名为<userid>.github.com的项目，上传文件到此项目中即可，不需要生成gh-pages分支。</userid></userid></p>
+
+<p>而有关Jekyll的配置，就需要去参考<a href="https://github.com/mojombo/jekyll/wiki">官方文档</a>了。这里倒是有一份<a href="https://github.com/pizn/blogTheme/tree/master/BlackCubeTheme">BlackCube的主题代码</a>可以参考下。</p>
+
+<h2 id="git">Git入门</h2>
+
+<p>学习Git最好就是看文档了，推荐两份：<a href="http://roclinux.cn/?p=914">看日记学git</a>,<a href="http://gitbook.liuhui998.com/">git community book中文版</a></p>
+
+<h2 id="jekyll-1">Jekyll本地调试</h2>
+
+<p>其实当初原本是想用Octpress的，但是Octpress要求Ruby 1.9.3，当时鼓捣了好久没配好，- -！。后来想想算了，就用了Jekyll。当时配了十多次，硬是没有配成功，最后终于找到了篇靠谱的文章配好了，就是这篇<a href="http://ruby-china.org/wiki/install_ruby_guide">如何快速正确的安装 Ruby, Rails 运行环境</a> (还是官方Wiki靠谱。。。)。其实Jekyll可以说是原生支持目录的，因为在<a href="https://github.com/mojombo/jekyll/wiki/Plugins">Plugins</a>的说明中就提及了。具体的实现可以参考这里，<a href="https://github.com/mojombo/jekyll/wiki/Plugins">为Jekyll博客添加category分类</a></p>
+
+]]></content>
+  </entry>
+  
+</feed>

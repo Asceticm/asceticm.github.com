@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Program | Ascetic.m]]></title>
+  <link href="http://Asceticm.github.com/blog/categories/program/atom.xml" rel="self"/>
+  <link href="http://Asceticm.github.com/"/>
+  <updated>2013-03-21T19:54:38+08:00</updated>
+  <id>http://Asceticm.github.com/</id>
+  <author>
+    <name><![CDATA[Ascetic.m]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[运载符重载]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/19/operator-overloading/"/>
+    <updated>2013-03-19T21:58:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/19/operator-overloading</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第十二章运算符重载的总结。</p>
+
+<p><img src="./OperatorOverloading.png" title="OperatorOverloading" ></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Yii框架中的权限使用]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/16/yii-auth/"/>
+    <updated>2013-03-16T11:05:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/16/yii-auth</id>
+    <content type="html"><![CDATA[<p>权限功能的一直是各个PHP框架中比较核心的一个功能，只需要少量代码即可实现较复杂的权限管理。</p>
+
+<p>Yii框架亦如此，但是使用框架中的权限功能还是需要一定的学习成本。这里分享一些自己学习和使用的经验。主要参考了Yii框架官方文档中的<a href="http://www.yiiframework.com/doc/guide/1.1/zh_cn/topics.auth">授权和验证</a>部分，Yii权限扩展模块<a href="http://code.google.com/p/yii-rights/">Rights</a>以及Yii的<a href="http://www.yiiframework.com/doc/api/1.1/CAuthManager">CAuthManager</a>接口文档。</p>
+
+<!-- more -->
+
+<h2 id="section">基于角色的访问控制</h2>
+
+<p>由于项目中的权限需求比较复杂，所以直接使用了基于角色的访问控制(Role-Based Access Control)。</p>
+
+<p>Yii框架的RBAC中，将权限分为三层：操作(operations)，任务(tasks)和角色(roles)。操作是权限中的最底层，是包含最少动作的一个集合(Rights中将每一个action视为一个Opreation，当然你也可以自己定义)；任务由若干操作组成，(Rights将一个Controller视作一个Task）；角色则由若干任务组成。为了保持灵活性，Yii允许同层的权限相互包含：一个操作可以包含其他操作，一个任务可以包含其他任务，一个角色可以包含其他角色。</p>
+
+<p>操作，任务和角色都是授权项目(authorization item)，可以理解为某个行为的许可。</p>
+
+<p>如果以上还不足以满足你的需求，那就需要利用业务规则了。一个业务规则就是一段PHP代码，在执行权限的时候被检查。例如在创建权限的时候，添加业务规则：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$bizRule=’return Yii::app()-&amp;gt;user-&amp;gt;id==$params[“post”]-&amp;gt;authID;’;</span>
+</span><span class='line'><span class="x">$task=$auth-&amp;gt;createTask(‘updateOwnPost’,’update a post by author himself’,$bizRule);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><em>注：写入业务规则的时候不要忘记分号，否则是无效的。</em></p>
+
+<p>在检查权限的时候传入参数，使业务规则作用：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$params=array(‘post’=&amp;gt;$post);</span>
+</span><span class='line'><span class="x">if(Yii::app()-&amp;gt;user-&amp;gt;checkAccess(‘updateOwnPost’,$params))</span>
+</span><span class='line'><span class="x">    //Some action</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2 id="rights">Rights</h2>
+
+<p>Rights拥有一个可视化编辑的界面，以及自动进行权限检验的功能。Rights的安装在其<a href="http://yii-rights.googlecode.com/files/yii-rights-doc-1.2.0.pdf">说明文档</a>中有详细的说明，此处不再说明。</p>
+
+<p>如果需要使用Rights的自动检验功能，需要使你的Controller继承RController。并且在Controller里添加以下代码：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">public function filters()</span>
+</span><span class='line'><span class="x">{</span>
+</span><span class='line'><span class="x">    return array(</span>
+</span><span class='line'><span class="x">    ‘rights’,</span>
+</span><span class='line'><span class="x">    );</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'><span class="x">public function allowedActions()</span>
+</span><span class='line'><span class="x">{</span>
+</span><span class='line'><span class="x">    return ‘index, suggestedTags’;</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>其中，allowedActions是不需要权限检验即可访问的Action。</p>
+
+<h2 id="section-1">权限接口</h2>
+
+<p>在实际使用到权限的时候，可能需要使用Yii提供的权限接口。具体可以参考<a href="http://www.yiiframework.com/doc/api/1.1/CAuthManager">这里</a>，需要注意的是，有些方法虽然只差了一个s，但是相差甚远，比如getAuthItem()和getAuthItems()，前面一个返回CAuthItem，而后面一个返回的却是一个Array()。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[jQuery使用相关]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/14/jquery-utilize/"/>
+    <updated>2013-03-14T17:41:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/14/jquery-utilize</id>
+    <content type="html"><![CDATA[<p>最近接触到一些Javascript，感觉Ajax比较强大，比PHP这样的服务器端脚本灵活许多。由于自己本身不会JS，也就只能边搜索边用，好在有jQuery，用起来真的比较方便。</p>
+
+<p>使用到的插件有时间选择插件<a href="http://jqueryui.com/datepicker/">jQuery-UI-datePicker</a>和<a href="http://trentrichardson.com/examples/timepicker/">jQuery-UI-TimePicker-addon</a>以及分页插件<a href="http://www.datatables.net/">dataTables</a>。</p>
+
+<!-- more -->
+
+<h2 id="jquery-ui-datepickerjquery-ui-timepicker">jQuery-UI-datePicker和jQuery-UI-TimePicker</h2>
+
+<p>TimePicker实际是datePicker的一个插件，需要嵌入datePicke中使用。由于项目中有限制时间选择区间的需求，可以借助Timepicker中的<code>minDateTime</code>和<code>maxDateTime</code>参数实现。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">getDay</span><span class="p">()</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">maxDate</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+</span><span class='line'><span class="nx">limit</span><span class="p">.</span><span class="nx">setDate</span><span class="p">(</span><span class="nx">temp</span><span class="p">);</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="err">‘#</span><span class="nx">targetID</span><span class="err">’</span><span class="p">).</span><span class="nx">datetimepicker</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">showSecond</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">timeFormat</span><span class="o">:</span> <span class="err">‘</span><span class="nx">HH</span><span class="o">:</span><span class="nx">mm</span><span class="o">:</span><span class="nx">ss</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">stepHour</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">stepMinute</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">stepSecond</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">minDateTime</span><span class="o">:</span> <span class="nx">current</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">maxDateTime</span><span class="o">:</span> <span class="nx">maxDate</span><span class="p">,</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2 id="datatables">dataTables</h2>
+
+<p>dataTables的数据来源有四种：DOM,Javascript数组，Ajax源以及服务器端数据。由于项目中的数据比较多，所以选择了最后一种。具体的可以参考<a href="http://www.datatables.net/examples/data_sources/server_side.html">官方文档</a>。</p>
+
+<p>dataTables的初始化：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">oTable</span><span class="o">=</span><span class="nx">$</span><span class="p">(</span><span class="err">‘#</span><span class="nx">jq_tablepage</span><span class="err">’</span><span class="p">).</span><span class="nx">dataTable</span><span class="p">({</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">bSort</span><span class="err">”</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">bPaginate</span><span class="err">”</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">bJQueryUI</span><span class="err">”</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">sPaginationType</span><span class="err">”</span><span class="o">:</span> <span class="err">“</span><span class="nx">full_numbers</span><span class="err">”</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">sAjaxSource</span><span class="err">”</span><span class="o">:</span> <span class="err">“</span><span class="p">..</span><span class="o">/</span><span class="nx">examples_support</span><span class="o">/</span><span class="nx">server_processing</span><span class="p">.</span><span class="nx">php</span><span class="err">”</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">oLanguage</span><span class="err">”</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="err">“</span><span class="nx">sUrl</span><span class="err">”</span><span class="o">:</span> <span class="err">“</span><span class="p">.</span><span class="o">/</span><span class="nx">js</span><span class="o">/</span><span class="nx">datatable</span><span class="p">.</span><span class="nx">language</span><span class="err">”</span><span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Ajax向服务器请求数据是传入的参数有：显示起始数<code>iDisplayStart</code>，显示条目数<code>iDisplayLength</code>，排序列数目<code>iSortingClos</code>，排序列<code>iSortingClo_1</code>以及搜索条件<code>sSearch</code>。</p>
+
+<p>其中，服务器端需要返回的数据格式如下。</p>
+
+<p>Liquid error: ClassNotFound: no lexer for alias 'PHP' found</p>
+
+<p>sEcho由前端AJAX请求产生，可以在<code>$_GET</code>中获得，<code>$iTotal</code>为查询条目总数，<code>$iFilteredTotal</code>为加上过滤条件后的条目总数，<code>aaData</code>为实际数据，格式为无Index的Json格式。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[引用和拷贝构造函数]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/03/copy-constructor/"/>
+    <updated>2013-03-03T15:42:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/03/copy-constructor</id>
+    <content type="html"><![CDATA[<p>这是一篇关于《C++编程思想》第十一章引用和拷贝构造函数的总结。</p>
+
+<p><img src="./copyconstructor.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[常量]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/12/21/const/"/>
+    <updated>2012-12-21T10:59:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/12/21/const</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第八章常量的总结。</p>
+
+<p><img src="./const.png" title="const" ></p>
+]]></content>
+  </entry>
+  
+</feed>
