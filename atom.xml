@@ -4,7 +4,7 @@
   <title><![CDATA[Ascetic.m]]></title>
   <link href="http://Asceticm.github.com/atom.xml" rel="self"/>
   <link href="http://Asceticm.github.com/"/>
-  <updated>2013-03-21T19:54:38+08:00</updated>
+  <updated>2013-03-23T14:45:41+08:00</updated>
   <id>http://Asceticm.github.com/</id>
   <author>
     <name><![CDATA[Ascetic.m]]></name>
@@ -12,6 +12,17 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[动态对象创建]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation/"/>
+    <updated>2013-03-23T14:38:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第13章动态对象创建的总结。</p>
+
+<p><img src="http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation/xmind.png" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[运载符重载]]></title>

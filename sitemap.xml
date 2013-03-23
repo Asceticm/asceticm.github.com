@@ -2,19 +2,19 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/11/08/Keep-Going/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T20:00:36+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/11/24/vim-basic/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T20:00:14+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/11/24/vim-advanced/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T20:00:24+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/11/25/vim-plugin/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T20:00:07+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/12/01/hello-world/</loc>
@@ -26,31 +26,35 @@
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2012/12/21/const/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T19:59:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2013/03/03/copy-constructor/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T19:59:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2013/03/14/octopress-tips/</loc>
-        <lastmod>2013-03-21T19:50:36+08:00</lastmod>
+        <lastmod>2013-03-21T19:59:23+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2013/03/14/jquery-utilize/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T19:59:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2013/03/16/yii-auth/</loc>
-        <lastmod>2013-03-21T19:21:27+08:00</lastmod>
+        <lastmod>2013-03-21T19:58:48+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/2013/03/19/operator-overloading/</loc>
-        <lastmod>2013-03-21T19:46:26+08:00</lastmod>
+        <lastmod>2013-03-21T19:58:21+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation/</loc>
+        <lastmod>2013-03-23T14:41:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/</loc>
-        <lastmod>2013-03-21T19:50:36+08:00</lastmod>
+        <lastmod>2013-03-23T14:41:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/about/</loc>
@@ -58,7 +62,7 @@
     </url>
     <url>
         <loc>http://Asceticm.github.com/blog/archives/</loc>
-        <lastmod>2013-03-21T19:50:36+08:00</lastmod>
+        <lastmod>2013-03-23T14:41:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://Asceticm.github.com/search.html</loc>

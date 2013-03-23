@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: C++ | Ascetic.m]]></title>
+  <link href="http://Asceticm.github.com/blog/categories/c-/atom.xml" rel="self"/>
+  <link href="http://Asceticm.github.com/"/>
+  <updated>2013-03-23T14:45:41+08:00</updated>
+  <id>http://Asceticm.github.com/</id>
+  <author>
+    <name><![CDATA[Ascetic.m]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[动态对象创建]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation/"/>
+    <updated>2013-03-23T14:38:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/23/danymic-object-creation</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第13章动态对象创建的总结。</p>
+
+<p><img src="./xmind.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[运载符重载]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/19/operator-overloading/"/>
+    <updated>2013-03-19T21:58:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/19/operator-overloading</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第十二章运算符重载的总结。</p>
+
+<p><img src="./OperatorOverloading.png" title="OperatorOverloading" ></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[引用和拷贝构造函数]]></title>
+    <link href="http://Asceticm.github.com/blog/2013/03/03/copy-constructor/"/>
+    <updated>2013-03-03T15:42:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2013/03/03/copy-constructor</id>
+    <content type="html"><![CDATA[<p>这是一篇关于《C++编程思想》第十一章引用和拷贝构造函数的总结。</p>
+
+<p><img src="./copyconstructor.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[常量]]></title>
+    <link href="http://Asceticm.github.com/blog/2012/12/21/const/"/>
+    <updated>2012-12-21T10:59:00+08:00</updated>
+    <id>http://Asceticm.github.com/blog/2012/12/21/const</id>
+    <content type="html"><![CDATA[<p>这是对《C++编程思想》第八章常量的总结。</p>
+
+<p><img src="./const.png" title="const" ></p>
+]]></content>
+  </entry>
+  
+</feed>
